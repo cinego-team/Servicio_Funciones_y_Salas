@@ -7,33 +7,33 @@ import { DisponibilidadButaca } from './disponibilidadButaca.entity';
 
 @Entity('Funcion')
 export class Funcion {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column({ default: true })
-  estaDisponible: boolean;
+    @Column({ default: true })
+    estaDisponible: boolean;
 
-  @Column({ type: 'date' })
-  fecha: string;
+    @Column({ type: 'date' })
+    fecha: Date;
 
-  @Column({ type: 'time' })
-  hora: string;
+    @Column()
+    hora: string;
 
-  // Relaciones
-  //@ManyToOne(() => Pelicula, (pelicula) => pelicula.Funcion, { eager: true })
-  //pelicula: Pelicula;
+    // Relaciones
+    //@ManyToOne(() => Pelicula, (pelicula) => pelicula.Funcion, { eager: true })
+    //pelicula: Pelicula;
 
-  //@ManyToOne(() => Usuario, (usuario) => usuario.funciones, { eager: true })
-  //usuario: Usuario;
+    //@ManyToOne(() => Usuario, (usuario) => usuario.funciones, { eager: true })
+    //usuario: Usuario;
 
-  @ManyToOne(() => Sala, (sala: Sala) => sala.funciones, { eager: true })
-  sala: Sala;
-  salaId: number;
+    @ManyToOne(() => Sala, (sala: Sala) => sala.funciones, { eager: true })
+    sala: Sala;
+    salaId: number;
 
-  @ManyToOne(() => Formato, (formato: Formato) => formato.funciones, { eager: true })
-  formato: Formato;
-  formatoId: number;
+    @ManyToOne(() => Formato, (formato: Formato) => formato.funciones, { eager: true })
+    formato: Formato;
+    formatoId: number;
 
-  @OneToMany(() => DisponibilidadButaca, (disponibilidadButaca) => disponibilidadButaca.funcion)
-  disponibilidadButaca: DisponibilidadButaca[];
+    @OneToMany(() => DisponibilidadButaca, (disponibilidadButaca) => disponibilidadButaca.funcion)
+    disponibilidadButaca: DisponibilidadButaca[];
 }
