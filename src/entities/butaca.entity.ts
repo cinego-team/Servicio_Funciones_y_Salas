@@ -2,19 +2,17 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'ty
 import { DisponibilidadButaca } from './disponibilidadButaca.entity';
 import { Fila } from './fila.entity';
 
-@Entity('Butaca')
+@Entity('butaca')
 export class Butaca {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ length: 3 })
+    @Column()
     nroButaca: number;
 
-    // Relaciones
-
-    @OneToMany(() => DisponibilidadButaca, (disponibilidadButaca) => disponibilidadButaca.butaca, { eager: true })
+    @OneToMany(() => DisponibilidadButaca, (disponibilidadButaca) => disponibilidadButaca.butaca)
     disponibilidadButaca: DisponibilidadButaca;
-    
-    @ManyToOne(() => Fila, (fila) => fila.butaca, { eager: true })
+
+    @ManyToOne(() => Fila, (fila) => fila.butaca)
     fila: Fila;
 }

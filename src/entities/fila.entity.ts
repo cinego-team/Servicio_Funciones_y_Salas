@@ -2,7 +2,7 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'ty
 import { Butaca } from './butaca.entity';
 import { Sala } from './sala.entity';
 
-@Entity('Fila')
+@Entity('fila')
 export class Fila {
     @PrimaryGeneratedColumn()
     id: number;

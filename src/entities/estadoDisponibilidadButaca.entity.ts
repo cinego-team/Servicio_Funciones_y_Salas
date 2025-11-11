@@ -3,28 +3,27 @@ import { DisponibilidadButaca } from './disponibilidadButaca.entity';
 
 // Enum con los valores posibles
 export enum EstadoButacaEnum {
-  DISPONIBLE = 'DISPONIBLE',
-  OCUPADA = 'OCUPADA', //cuando ya fue comprada
-  RESERVADA = 'RESERVADA', //cuando estan siendo compradas
-  FUERA_DE_SERVICIO = 'FUERA_DE_SERVICIO',
+    DISPONIBLE = 'DISPONIBLE',
+    OCUPADA = 'OCUPADA', //cuando ya fue comprada
+    RESERVADA = 'RESERVADA', //cuando estan siendo compradas
+    FUERA_DE_SERVICIO = 'FUERA_DE_SERVICIO',
 }
 
-@Entity('EstadoDisponibilidadButaca')
+@Entity('estado_disponibilidad_butaca')
 export class EstadoDisponibilidadButaca {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column({
-    type: 'enum',
-    enum: EstadoButacaEnum.DISPONIBLE,
-    unique: true,
-  })
-  nombre: EstadoButacaEnum;
+    @Column({
+        type: 'enum',
+        enum: EstadoButacaEnum,
+    })
+    nombre: EstadoButacaEnum;
 
-  // Relación con DisponibilidadButaca
-  @OneToMany(
-    () => DisponibilidadButaca,
-    (disponibilidadButaca) => disponibilidadButaca.estadoDisponibilidadButaca
-  )
-  disponibilidadButaca: DisponibilidadButaca[];
+    // Relación con DisponibilidadButaca
+    @OneToMany(
+        () => DisponibilidadButaca,
+        (disponibilidadButaca) => disponibilidadButaca.estadoDisponibilidadButaca
+    )
+    disponibilidadButaca: DisponibilidadButaca[];
 }

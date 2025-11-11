@@ -5,7 +5,7 @@ import { Formato } from './formato.entity';
 import { DisponibilidadButaca } from './disponibilidadButaca.entity';
 //import { Venta } from './venta.entity';
 
-@Entity('Funcion')
+@Entity('funcion')
 export class Funcion {
     @PrimaryGeneratedColumn()
     id: number;
@@ -19,16 +19,16 @@ export class Funcion {
     @Column()
     hora: string;
 
-  @Column({ type: 'int' })
-  peliculaId: number;
+    @Column({ type: 'int' })
+    peliculaId: number;
 
-  @Column({ type: 'int'})
-  usuarioId: number;
+    @Column({ type: 'int' })
+    usuarioId: number;
 
-  //Relaciones
-  //@ManyToOne(() => Pelicula, (pelicula) => pelicula.Funcion, { eager: true })
-  //pelicula: Pelicula;
-  //pelicuaId: number;
+    //Relaciones
+    //@ManyToOne(() => Pelicula, (pelicula) => pelicula.Funcion, { eager: true })
+    //pelicula: Pelicula;
+    //pelicuaId: number;
 
     //@ManyToOne(() => Usuario, (usuario) => usuario.funciones, { eager: true })
     //usuario: Usuario;
