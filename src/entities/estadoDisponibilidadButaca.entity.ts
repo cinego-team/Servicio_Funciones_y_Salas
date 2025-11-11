@@ -4,7 +4,8 @@ import { DisponibilidadButaca } from './disponibilidadButaca.entity';
 // Enum con los valores posibles
 export enum EstadoButacaEnum {
   DISPONIBLE = 'DISPONIBLE',
-  NO_DISPONIBLE = 'NO_DISPONIBLE',
+  OCUPADA = 'OCUPADA', //cuando ya fue comprada
+  RESERVADA = 'RESERVADA', //cuando estan siendo compradas
   FUERA_DE_SERVICIO = 'FUERA_DE_SERVICIO',
 }
 

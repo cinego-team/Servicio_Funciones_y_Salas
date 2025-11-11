@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Funcion } from '../entities/funcion.entity';
 import { Repository } from 'typeorm';
-import { FuncionInput, FuncionInputUpdate, FuncionResponse } from './dto';
+import { FuncionButacasDetalleResponse, FuncionInput, FuncionInputUpdate, FuncionResponse } from './dto';
 import { Sala } from 'src/entities/sala.entity';
 import { Formato } from 'src/entities/formato.entity';
 import { DisponibilidadButaca } from 'src/entities/disponibilidadButaca.entity';
 import { Butaca } from 'src/entities/butaca.entity';
 import { EstadoButacaEnum, EstadoDisponibilidadButaca } from 'src/entities/estadoDisponibilidadButaca.entity';
+import { axiosAPIPeliculas } from 'src/axios_service/axios.client';
+import { config } from '../axios_service/env';
 
 @Injectable()
 export class FuncionService {
@@ -86,6 +88,30 @@ export class FuncionService {
         disponibilidades.push(constDisponibilidadButaca);
         i++;
     }
+
+        //Pelicula data desde microservicio de peliculas
+        let peliculaData = null;
+        if (constFuncion.peliculaId) {
+            try {
+                const response = await axiosAPIPeliculas.get(config.APIPeliculasUrls.getPeliculaById(constFuncion.peliculaId));
+                peliculaData = response.data;
+            } catch (error) {
+                console.error(`Error al obtener película ${constFuncion.peliculaId}:`, error.message);
+            }
+        }
+
+        //Usuario data desde microservicio de usuarios
+        let usuarioData = null;
+        if (constFuncion.usuarioId) {
+            try {
+                const response = await axiosAPIPeliculas.get(config.APIUsuariosUrls.getDatosEmpleadoById(constFuncion.usuarioId));
+                usuarioData = response.data;
+            } catch (error) {
+                console.error(`Error al obtener usuario ${constFuncion.usuarioId}:`, error.message);
+                // No lanzar error, solo continuar sin datos de usuario
+            }
+        }
+
         await this.disponibilidadButacaRepo.save(disponibilidades);
 
         const response: FuncionResponse = {
@@ -108,8 +134,8 @@ export class FuncionService {
                     estadoDisponibilidadButaca: String(item.estadoDisponibilidadButaca.nombre),
                 }))
                 : [],
-            //peliculaId: constPelicula.id;
-            //usuarioId: constUsuario.id;
+            pelicula: peliculaData ?? undefined,
+            usuario: usuarioData ?? undefined,
         };
         return response;
 
@@ -128,11 +154,35 @@ export class FuncionService {
                 sala: true,
                 formato: true,
                 disponibilidadButaca: true,
-                //pelicula:true,
-                //usuario:true,
             },
         });
+
         if (!constFuncion) throw new Error('404 Funcion not found.');
+
+        //Pelicula data desde microservicio de peliculas
+        let peliculaData = null;
+        if (constFuncion.peliculaId) {
+            try {
+                const response = await axiosAPIPeliculas.get(config.APIPeliculasUrls.getPeliculaById(constFuncion.peliculaId));
+                peliculaData = response.data;
+            } catch (error) {
+                console.error(`Error al obtener película ${constFuncion.peliculaId}:`, error.message);
+                // No lanzar error, solo continuar sin datos de película
+            }
+        }
+
+        //Usuario data desde microservicio de usuarios
+        let usuarioData = null;
+        if (constFuncion.usuarioId) {
+            try {
+                const response = await axiosAPIPeliculas.get(config.APIUsuariosUrls.getDatosEmpleadoById(constFuncion.usuarioId));
+                usuarioData = response.data;
+            } catch (error) {
+                console.error(`Error al obtener usuario ${constFuncion.usuarioId}:`, error.message);
+                // No lanzar error, solo continuar sin datos de usuario
+            }
+        }
+
         
         return {
             id: constFuncion.id,
@@ -154,8 +204,8 @@ export class FuncionService {
                     estadoDisponibilidadButaca: String(item.estadoDisponibilidadButaca.nombre),
                 }))
                 : [],
-            //peliculaId: constPelicula.id;
-            //usuarioId: constUsuario.id;
+            pelicula: peliculaData ?? undefined, 
+            usuario: usuarioData ?? undefined,
         };
     }
 
@@ -206,6 +256,48 @@ export class FuncionService {
         };
         return response;
     }
+
+    async getFuncionesByPeliculaId(peliculaId: number): Promise<FuncionResponse[]> {
+    const funciones = await this.funcionRepo.find({
+        where: { peliculaId },
+        relations: {
+            sala: true,
+            formato: true,
+            disponibilidadButaca: {
+                butaca: true,
+                estadoDisponibilidadButaca: true,
+            },
+        },
+    });
+
+    if (!funciones || funciones.length === 0) {
+        throw new Error('404 No se encontraron funciones para esta película.');
+    }
+
+    return funciones.map(funcion => ({
+        id: funcion.id,
+        estaDisponible: funcion.estaDisponible,
+        fecha: funcion.fecha,
+        hora: funcion.hora,
+        peliculaId: funcion.peliculaId, // Incluir en la respuesta
+        sala: {
+            nroSala: funcion.sala.nroSala,
+            capacidad: funcion.sala.capacidad,
+            estaDisponible: funcion.sala.estaDisponible,
+        },
+        formato: {
+            nombre: funcion.formato.nombre,
+            precio: funcion.formato.precio,
+        },
+        disponibilidadButaca: Array.isArray(funcion.disponibilidadButaca) && funcion.disponibilidadButaca.length > 0
+            ? funcion.disponibilidadButaca.map(item => ({
+                nroButaca: item.butaca.nroButaca,
+                estadoDisponibilidadButaca: String(item.estadoDisponibilidadButaca.nombre),
+            }))
+            : [],
+    }));
+}
+
 
     async partialUpdateFuncion( id: number,datos: Partial<FuncionInputUpdate>,): Promise<FuncionResponse> {
         const constFuncion = await this.funcionRepo.findOne({where: { id },relations: { sala: true, formato: true, disponibilidadButaca: {butaca: true,estadoDisponibilidadButaca: true,}, },}); // pelicula: true, usuario: true
@@ -272,9 +364,54 @@ export class FuncionService {
         estadoDisponibilidadButaca: db.estadoDisponibilidadButaca.nombre,
         })),
     };
-
     return response;
     }
+    
+
+    //Funcion Importante para el front
+    //Detalle de la funcion con las butacas y su estado
+    //para poder renderizar en el front
+    async getFuncionWithButacasDetails(id: number): Promise<FuncionButacasDetalleResponse> {
+    const funcion = await this.funcionRepo.findOne({
+        where: { id },
+        relations: {
+            formato: true,
+            disponibilidadButaca: {
+                butaca: {
+                    fila: true,
+                },
+                estadoDisponibilidadButaca: true,
+            },
+        },
+    });
+
+    if (!funcion) {
+        throw new Error('404 Función no encontrada.');
+    }
+
+    return {
+        id: funcion.id,
+        fecha: funcion.fecha,
+        hora: funcion.hora,
+        estaDisponible: funcion.estaDisponible,
+        formato: {
+            nombre: funcion.formato.nombre,
+            precio: funcion.formato.precio,
+        },
+        butacas: Array.isArray(funcion.disponibilidadButaca) && funcion.disponibilidadButaca.length > 0
+            ? funcion.disponibilidadButaca.map(dispButaca => ({
+                id: dispButaca.butaca.id,
+                nroButaca: dispButaca.butaca.nroButaca,
+                fila: {
+                    id: dispButaca.butaca.fila.id,
+                    nombre: dispButaca.butaca.fila.letraFila,
+                },
+                estadoDisponibilidad: String(dispButaca.estadoDisponibilidadButaca.nombre),
+                disponibilidadButacaId: dispButaca.id,
+            }))
+            : [],
+    };
+}
 
     async deleteFuncionById(id: number): Promise<{ message: string }> {
         const constFuncion = await this.funcionRepo.findOne({ where: { id } });

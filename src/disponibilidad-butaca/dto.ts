@@ -6,3 +6,13 @@ export class DisponibilidadButacaResponse {
     butacaId: number;
     estadoDisponibilidadButacaId: EstadoButacaEnum;
 }
+
+// DTO para cambiar estado de múltiples butacas
+export class CambiarEstadoButacasInput {
+    disponibilidadButacaIds: number[];
+}
+
+export class CambiarEstadoButacasResponse {
+    actualizadas: number;
+    mensaje: string;
+}

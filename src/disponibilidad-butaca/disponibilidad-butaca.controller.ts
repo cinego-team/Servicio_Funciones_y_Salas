@@ -1,6 +1,6 @@
 // disponibilidad-butaca.controller.ts
 
-import { Controller, Get, Post, Put, Delete, Param, Body, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, ParseIntPipe, Patch } from '@nestjs/common';
 import { DisponibilidadButacaService } from './disponibilidad-butaca.service';
 import { DisponibilidadButacaResponse } from './dto';
 import { EstadoButacaEnum } from '../entities/estadoDisponibilidadButaca.entity';
@@ -34,6 +34,22 @@ export class DisponibilidadButacaController {
     @Body() body: { funcionId?: number; butacaId?: number; estadoDisponibilidadButacaId?: EstadoButacaEnum }
   ): Promise<DisponibilidadButacaResponse> {
     return this.disponibilidadService.update(id, body);
+  }
+
+  // Reservar butacas (al abrir cobro)
+  @Patch('reservar')
+  async reservarButacas(
+      @Body() body: { disponibilidadButacaIds: number[] }
+  ): Promise<{ actualizadas: number; mensaje: string }> {
+      return this.disponibilidadService.reservarButacas(body.disponibilidadButacaIds);
+  }
+
+  // Ocupar butacas (al cerrar cobro)
+  @Patch('ocupar')
+  async ocuparButacas(
+      @Body() body: { disponibilidadButacaIds: number[] }
+  ): Promise<{ actualizadas: number; mensaje: string }> {
+      return this.disponibilidadService.ocuparButacas(body.disponibilidadButacaIds);
   }
 
   // Eliminar una disponibilidad

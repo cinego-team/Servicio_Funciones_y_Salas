@@ -19,9 +19,16 @@ export class Funcion {
     @Column()
     hora: string;
 
-    // Relaciones
-    //@ManyToOne(() => Pelicula, (pelicula) => pelicula.Funcion, { eager: true })
-    //pelicula: Pelicula;
+  @Column({ type: 'int' })
+  peliculaId: number;
+
+  @Column({ type: 'int'})
+  usuarioId: number;
+
+  //Relaciones
+  //@ManyToOne(() => Pelicula, (pelicula) => pelicula.Funcion, { eager: true })
+  //pelicula: Pelicula;
+  //pelicuaId: number;
 
     //@ManyToOne(() => Usuario, (usuario) => usuario.funciones, { eager: true })
     //usuario: Usuario;

@@ -113,6 +113,70 @@ export class DisponibilidadButacaService {
     };
   }
 
+// Reservar butacas (cambiar estado a RESERVADA)
+async reservarButacas(disponibilidadButacaIds: number[]): Promise<{ actualizadas: number; mensaje: string }> {
+    // Buscar el estado RESERVADA
+    const estadoReservada = await this.estadoRepo.findOne({ 
+        where: { nombre: EstadoButacaEnum.RESERVADA } 
+    });
+
+    if (!estadoReservada) {
+        throw new NotFoundException('Estado RESERVADA no encontrado en la base de datos');
+    }
+
+    // Actualizar todas las disponibilidades de butaca
+    let actualizadas = 0;
+    for (const id of disponibilidadButacaIds) {
+        const disponibilidad = await this.disponibilidadRepo.findOne({ 
+            where: { id }, 
+            relations: ['estadoDisponibilidadButaca'] 
+        });
+
+        if (disponibilidad) {
+            disponibilidad.estadoDisponibilidadButaca = estadoReservada;
+            await this.disponibilidadRepo.save(disponibilidad);
+            actualizadas++;
+        }
+    }
+
+    return {
+        actualizadas,
+        mensaje: `${actualizadas} butacas reservadas exitosamente`,
+    };
+}
+
+// Ocupar butacas (cambiar estado a OCUPADO)
+async ocuparButacas(disponibilidadButacaIds: number[]): Promise<{ actualizadas: number; mensaje: string }> {
+    // Buscar el estado OCUPADO
+    const estadoOcupado = await this.estadoRepo.findOne({ 
+        where: { nombre: EstadoButacaEnum.OCUPADA } 
+    });
+
+    if (!estadoOcupado) {
+        throw new NotFoundException('Estado OCUPADO no encontrado en la base de datos');
+    }
+
+    // Actualizar todas las disponibilidades de butaca
+    let actualizadas = 0;
+    for (const id of disponibilidadButacaIds) {
+        const disponibilidad = await this.disponibilidadRepo.findOne({ 
+            where: { id }, 
+            relations: ['estadoDisponibilidadButaca'] 
+        });
+
+        if (disponibilidad) {
+            disponibilidad.estadoDisponibilidadButaca = estadoOcupado;
+            await this.disponibilidadRepo.save(disponibilidad);
+            actualizadas++;
+        }
+    }
+
+    return {
+        actualizadas,
+        mensaje: `${actualizadas} butacas ocupadas exitosamente`,
+    };
+}
+
   // Eliminar
   async remove(id: number): Promise<void> {
     const result = await this.disponibilidadRepo.delete(id);
