@@ -3,13 +3,13 @@ import { axiosAPIUsuarios } from "./axios.client";
  export const config = {
 
     APIPeliculasUrls: {
-        baseUrl: 'http://localhost:3001',
-        getPeliculaById: (id: number) => `/pelicula/${id}`,
+        baseUrl: 'http://localhost:3000',
+        getPeliculaById: (id: number) => `microservicio-peliculas/pelicula/${id}`,
 
     },
     APIUsuariosUrls: {
-        baseUrl:'http://localhost:3002',
-        getDatosEmpleadoById: (id: number) => `/usuarios/datos-empleado/${id}`
+        baseUrl:'http://localhost:3000',
+        getDatosEmpleadoById: (id: number) => `microservicio-usuarios/datos-empleado/${id}`
     }
 
 }
