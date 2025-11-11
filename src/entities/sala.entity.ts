@@ -8,9 +8,6 @@ export class Sala {
     id: number;
 
     @Column()
-    capacidad: number;
-
-    @Column()
     estaDisponible: boolean;
 
     @Column()

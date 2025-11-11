@@ -7,12 +7,12 @@ export class Fila {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ length: 3 })
+    @Column()
     letraFila: string;
 
-    @OneToMany(() => Butaca, (butaca) => butaca.fila, { eager: true })
+    @OneToMany(() => Butaca, (butaca) => butaca.fila)
     butaca: Butaca[];
 
-    @ManyToOne(() => Sala, (sala) => sala.filas, { eager: true })
+    @ManyToOne(() => Sala, (sala) => sala.filas)
     sala: Sala;
 }

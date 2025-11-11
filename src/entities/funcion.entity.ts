@@ -25,14 +25,6 @@ export class Funcion {
     @Column()
     usuarioId: number;
 
-    //Relaciones
-    //@ManyToOne(() => Pelicula, (pelicula) => pelicula.Funcion, { eager: true })
-    //pelicula: Pelicula;
-    //pelicuaId: number;
-
-    //@ManyToOne(() => Usuario, (usuario) => usuario.funciones, { eager: true })
-    //usuario: Usuario;
-
     @ManyToOne(() => Sala, (sala: Sala) => sala.funciones, { eager: true })
     sala: Sala;
     salaId: number;
