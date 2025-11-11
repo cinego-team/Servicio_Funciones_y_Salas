@@ -7,13 +7,13 @@ export class Sala {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: 'int' })
+    @Column()
     capacidad: number;
 
-    @Column({ default: true })
+    @Column()
     estaDisponible: boolean;
 
-    @Column({ unique: true })
+    @Column()
     nroSala: number;
 
     // Relaciones

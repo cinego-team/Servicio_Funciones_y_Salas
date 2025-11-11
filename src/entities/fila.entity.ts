@@ -10,10 +10,9 @@ export class Fila {
     @Column({ length: 3 })
     letraFila: string;
 
-    // Relaciones
-
     @OneToMany(() => Butaca, (butaca) => butaca.fila, { eager: true })
     butaca: Butaca[];
+
     @ManyToOne(() => Sala, (sala) => sala.filas, { eager: true })
     sala: Sala;
 }

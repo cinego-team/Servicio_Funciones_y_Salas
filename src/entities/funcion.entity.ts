@@ -10,7 +10,7 @@ export class Funcion {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ default: true })
+    @Column()
     estaDisponible: boolean;
 
     @Column({ type: 'date' })
@@ -19,10 +19,10 @@ export class Funcion {
     @Column()
     hora: string;
 
-    @Column({ type: 'int' })
+    @Column()
     peliculaId: number;
 
-    @Column({ type: 'int' })
+    @Column()
     usuarioId: number;
 
     //Relaciones

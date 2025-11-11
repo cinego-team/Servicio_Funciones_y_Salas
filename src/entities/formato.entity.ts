@@ -6,7 +6,7 @@ export class Formato {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ length: 50 })
+    @Column()
     nombre: string;
 
     @Column({ type: 'decimal', precision: 10, scale: 2 })
