@@ -7,10 +7,10 @@ export class Sala {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ name: 'esta_disponible' })
     estaDisponible: boolean;
 
-    @Column()
+    @Column({ name: 'nro_sala' })
     nroSala: number;
 
     // Relaciones

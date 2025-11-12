@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Funcion } from './funcion.entity';
 import { Butaca } from './butaca.entity';
 import { EstadoDisponibilidadButaca } from './estadoDisponibilidadButaca.entity';
@@ -17,5 +17,6 @@ export class DisponibilidadButaca {
     butaca: Butaca;
 
     @ManyToOne(() => EstadoDisponibilidadButaca, (estadoDisponibilidadButaca) => estadoDisponibilidadButaca.disponibilidadButaca)
+    @JoinColumn({ name: 'estado_disponibilidad_butaca' })
     estadoDisponibilidadButaca: EstadoDisponibilidadButaca;
 }

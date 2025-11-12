@@ -10,7 +10,7 @@ export class Funcion {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ name: 'esta_disponible' })
     estaDisponible: boolean;
 
     @Column({ type: 'date' })
@@ -19,19 +19,17 @@ export class Funcion {
     @Column()
     hora: string;
 
-    @Column()
+    @Column({ name: 'pelicula_id' })
     peliculaId: number;
 
-    @Column()
+    @Column({ name: 'usuario_id' })
     usuarioId: number;
 
-    @ManyToOne(() => Sala, (sala: Sala) => sala.funciones, { eager: true })
+    @ManyToOne(() => Sala, (sala: Sala) => sala.funciones)
     sala: Sala;
-    salaId: number;
 
-    @ManyToOne(() => Formato, (formato: Formato) => formato.funciones, { eager: true })
+    @ManyToOne(() => Formato, (formato: Formato) => formato.funciones)
     formato: Formato;
-    formatoId: number;
 
     @OneToMany(() => DisponibilidadButaca, (disponibilidadButaca) => disponibilidadButaca.funcion)
     disponibilidadButaca: DisponibilidadButaca[];

@@ -17,6 +17,7 @@ export class EstadoDisponibilidadButaca {
     @Column({
         type: 'enum',
         enum: EstadoButacaEnum,
+        name: 'estado_butaca',
     })
     nombre: EstadoButacaEnum;
 

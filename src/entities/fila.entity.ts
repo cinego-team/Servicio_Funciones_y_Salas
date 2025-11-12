@@ -7,7 +7,7 @@ export class Fila {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ name: 'letra_fila' })
     letraFila: string;
 
     @OneToMany(() => Butaca, (butaca) => butaca.fila)

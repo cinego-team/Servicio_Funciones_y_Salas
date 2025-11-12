@@ -7,8 +7,8 @@ export class Butaca {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
-    nroButaca: number;
+    @Column({ name: 'nro_butaca' })
+    nroButaca: string;
 
     @OneToMany(() => DisponibilidadButaca, (disponibilidadButaca) => disponibilidadButaca.butaca)
     disponibilidadButaca: DisponibilidadButaca;
