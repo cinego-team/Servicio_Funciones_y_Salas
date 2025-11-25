@@ -1,9 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
-//import { Pelicula } from './pelicula.entity';
 import { Sala } from './sala.entity';
 import { Formato } from './formato.entity';
 import { DisponibilidadButaca } from './disponibilidadButaca.entity';
-//import { Venta } from './venta.entity';
 
 @Entity('funcion')
 export class Funcion {
@@ -15,9 +13,6 @@ export class Funcion {
 
     @Column({ type: 'date' })
     fecha: Date;
-
-    @Column()
-    hora: string;
 
     @Column({ name: 'pelicula_id' })
     peliculaId: number;

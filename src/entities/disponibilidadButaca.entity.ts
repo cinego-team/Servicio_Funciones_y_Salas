@@ -8,15 +8,15 @@ export class DisponibilidadButaca {
     @PrimaryGeneratedColumn()
     id: number;
 
-    // Relaciones
-
     @ManyToOne(() => Funcion, (funcion) => funcion.disponibilidadButaca)
+    @JoinColumn({ name: 'funcion_id' })
     funcion: Funcion;
 
     @ManyToOne(() => Butaca, (butaca) => butaca.disponibilidadButaca)
+    @JoinColumn({ name: 'butaca_id' })
     butaca: Butaca;
 
     @ManyToOne(() => EstadoDisponibilidadButaca, (estadoDisponibilidadButaca) => estadoDisponibilidadButaca.disponibilidadButaca)
-    @JoinColumn({ name: 'estado_disponibilidad_butaca' })
+    @JoinColumn({ name: 'estado_disponibilidad_butaca_id' })
     estadoDisponibilidadButaca: EstadoDisponibilidadButaca;
 }
