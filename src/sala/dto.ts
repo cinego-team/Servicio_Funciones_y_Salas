@@ -1,19 +1,14 @@
 export class SalaInput {
-    estaDisponible: boolean;
     nroSala: number;
+    estaDisponible: boolean;
+    cantFilas: number;
+    cantButacasPorFila: number;
 }
 
 export class SalaResponse {
     id: number;
     estaDisponible: boolean;
     nroSala: number;
-    filas?: {
-        id: number;
-        letraFila: string;
-        butacas: {
-            id: number;
-            nroButaca: number;
-            estadoDisponibilidadButaca: string;
-        }[];
-    }[];
+    cantFilas: number;
+    cantButacasPorFila: number;
 }

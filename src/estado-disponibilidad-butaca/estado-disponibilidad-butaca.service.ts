@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EstadoDisponibilidadButaca } from '../entities/estadoDisponibilidadButaca.entity';
 import { EstadoDisponibilidadInput, EstadoDisponibilidadResponse } from './dto';
+import { EstadoButacaEnum } from '../entities/estadoDisponibilidadButaca.entity';
 
 @Injectable()
 export class EstadoDisponibilidadButacaService {
@@ -54,5 +55,15 @@ export class EstadoDisponibilidadButacaService {
             id: entity.id,
             nombre: entity.nombre,
         };
+    }
+
+    async getByEnum(nombre: EstadoButacaEnum): Promise<EstadoDisponibilidadButaca> {
+        const estado = await this.estadoRepo.findOne({
+            where: { nombre },
+        });
+        if (!estado) {
+            throw new NotFoundException(`EstadoDisponibilidadButaca with name ${nombre} not found`);
+        }
+        return estado;
     }
 }

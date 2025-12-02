@@ -1,6 +1,4 @@
-import { axiosAPIUsuarios } from "./axios.client";
-
- export const config = {
+export const config = {
 
     APIPeliculasUrls: {
         baseUrl: 'http://localhost:3000',
@@ -8,7 +6,7 @@ import { axiosAPIUsuarios } from "./axios.client";
 
     },
     APIUsuariosUrls: {
-        baseUrl:'http://localhost:3000',
+        baseUrl: 'http://localhost:3000',
         getDatosEmpleadoById: (id: number) => `microservicio-usuarios/datos-empleado/${id}`
     }
 

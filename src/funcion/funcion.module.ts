@@ -2,16 +2,16 @@ import { Module } from '@nestjs/common';
 import { FuncionService } from './funcion.service';
 import { FuncionController } from './funcion.controller';
 import { Funcion } from 'src/entities/funcion.entity';
-import { Formato } from 'src/entities/formato.entity';
-import { Sala } from 'src/entities/sala.entity';
-import { DisponibilidadButaca } from 'src/entities/disponibilidadButaca.entity';
-import { EstadoDisponibilidadButaca } from 'src/entities/estadoDisponibilidadButaca.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { SalaService } from 'src/sala/sala.service';
+import { EstadoDisponibilidadButacaService } from 'src/estado-disponibilidad-butaca/estado-disponibilidad-butaca.service';
+import { DisponibilidadButacaService } from 'src/disponibilidad-butaca/disponibilidad-butaca.service';
+import { FormatoService } from 'src/formato/formato.service';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Funcion, Formato, Sala, DisponibilidadButaca, EstadoDisponibilidadButaca])],
+    imports: [TypeOrmModule.forFeature([Funcion])],
     controllers: [FuncionController],
-    providers: [FuncionService],
+    providers: [FuncionService, SalaService, FormatoService, EstadoDisponibilidadButacaService, DisponibilidadButacaService],
     exports: [FuncionService],
 })
 export class FuncionModule { }

@@ -8,107 +8,107 @@ import { ButacaInput, ButacaResponse } from './dto';
 
 @Injectable()
 export class ButacaService {
-  constructor(
-    @InjectRepository(Butaca)
-    private readonly butacaRepository: Repository<Butaca>,
+    constructor(
+        @InjectRepository(Butaca)
+        private readonly butacaRepository: Repository<Butaca>,
 
-    @InjectRepository(Fila)
-    private readonly filaRepository: Repository<Fila>,
+        @InjectRepository(Fila)
+        private readonly filaRepository: Repository<Fila>,
 
-    @InjectRepository(DisponibilidadButaca)
-    private readonly disponibilidadRepository: Repository<DisponibilidadButaca>,
-  ) {}
+        @InjectRepository(DisponibilidadButaca)
+        private readonly disponibilidadRepository: Repository<DisponibilidadButaca>,
+    ) { }
 
-  // 🟢 CREATE
-  async create(input: ButacaInput): Promise<ButacaResponse> {
-    const fila = await this.filaRepository.findOne({ where: { id: input.filaId } });
-    if (!fila) throw new NotFoundException(`Fila con id ${input.filaId} no encontrada`);
-
-    const disponibilidad = await this.disponibilidadRepository.findOne({
-      where: { id: input.disponibilidadId },
-      relations: ['estado'], // para acceder a estado.nombre
-    });
-    if (!disponibilidad) {
-      throw new NotFoundException(`Disponibilidad con id ${input.disponibilidadId} no encontrada`);
+    createMultipleForFila(cantButacasPorFila: number): Butaca[] {
+        const butacas: Butaca[] = [];
+        for (let i = 1; i <= cantButacasPorFila; i++) {
+            const butaca = this.butacaRepository.create({
+                nroButaca: i,
+            });
+            butacas.push(butaca);
+        }
+        return butacas;
     }
 
-    const butaca = this.butacaRepository.create({
-      nroButaca: input.nroButaca,
-      fila,
-      disponibilidadButaca: disponibilidad,
-    });
-
-    const saved = await this.butacaRepository.save(butaca);
-    return this.toResponse(saved);
-  }
-
-  // 🟢 FIND ALL
-  async findAll(): Promise<ButacaResponse[]> {
-    const butacas = await this.butacaRepository.find({
-      relations: ['fila', 'disponibilidadButaca', 'disponibilidadButaca.estado'],
-    });
-    return butacas.map((b) => this.toResponse(b));
-  }
-
-  // 🟢 FIND ONE
-  async findOne(id: number): Promise<ButacaResponse> {
-    const butaca = await this.butacaRepository.findOne({
-      where: { id },
-      relations: ['fila', 'disponibilidadButaca', 'disponibilidadButaca.estado'],
-    });
-    if (!butaca) throw new NotFoundException(`Butaca con id ${id} no encontrada`);
-
-    return this.toResponse(butaca);
-  }
-
-  // 🟢 UPDATE
-  async update(id: number, input: ButacaInput): Promise<ButacaResponse> {
-    const butaca = await this.butacaRepository.findOne({ where: { id } });
-    if (!butaca) throw new NotFoundException(`Butaca con id ${id} no encontrada`);
-
-    if (input.nroButaca) {
-      butaca.nroButaca = input.nroButaca;
+    async saveArray(butacas: Butaca[]): Promise<Butaca[]> {
+        return this.butacaRepository.save(butacas);
     }
 
-    if (input.filaId) {
-      const fila = await this.filaRepository.findOne({ where: { id: input.filaId } });
-      if (!fila) throw new NotFoundException(`Fila con id ${input.filaId} no encontrada`);
-      butaca.fila = fila;
+    // 🟢 FIND ALL
+    async findAll(): Promise<ButacaResponse[]> {
+        const butacas = await this.butacaRepository.find({
+            relations: ['fila', 'disponibilidadButaca', 'disponibilidadButaca.estado'],
+        });
+        return butacas.map((b) => this.toResponse(b));
     }
 
-    if (input.disponibilidadId) {
-      const disponibilidad = await this.disponibilidadRepository.findOne({
-        where: { id: input.disponibilidadId },
-        relations: ['estado'],
-      });
-      if (!disponibilidad) {
-        throw new NotFoundException(`Disponibilidad con id ${input.disponibilidadId} no encontrada`);
-      }
-      butaca.disponibilidadButaca = disponibilidad;
+    // 🟢 FIND ONE
+    async findOne(id: number): Promise<ButacaResponse> {
+        const butaca = await this.butacaRepository.findOne({
+            where: { id },
+            relations: ['fila', 'disponibilidadButaca', 'disponibilidadButaca.estado'],
+        });
+        if (!butaca) throw new NotFoundException(`Butaca con id ${id} no encontrada`);
+
+        return this.toResponse(butaca);
     }
 
-    const updated = await this.butacaRepository.save(butaca);
-    return this.toResponse(updated);
-  }
+    // 🟢 UPDATE
+    async update(id: number, input: ButacaInput): Promise<ButacaResponse> {
+        const butaca = await this.butacaRepository.findOne({ where: { id } });
+        if (!butaca) throw new NotFoundException(`Butaca con id ${id} no encontrada`);
 
-  // 🟢 REMOVE
-  async remove(id: number): Promise<void> {
-    const butaca = await this.butacaRepository.findOne({ where: { id } });
-    if (!butaca) throw new NotFoundException(`Butaca con id ${id} no encontrada`);
-    await this.butacaRepository.remove(butaca);
-  }
+        if (input.nroButaca) {
+            butaca.nroButaca = input.nroButaca;
+        }
 
-  // 🔹 Mapper de Entity -> DTO Response
-  private toResponse(entity: Butaca): ButacaResponse {
-    return {
-      id: entity.id,
-      nroButaca: entity.nroButaca,
-      fila: {
-        letraFila: entity.fila?.letraFila ?? '',
-      },
-      estadoDisponibilidad: {
-        nombre: entity.disponibilidadButaca?.estadoDisponibilidadButaca?.nombre ?? '',
-      },
-    };
-  }
+        if (input.filaId) {
+            const fila = await this.filaRepository.findOne({ where: { id: input.filaId } });
+            if (!fila) throw new NotFoundException(`Fila con id ${input.filaId} no encontrada`);
+            butaca.fila = fila;
+        }
+
+        if (input.disponibilidadId) {
+            const disponibilidad = await this.disponibilidadRepository.findOne({
+                where: { id: input.disponibilidadId },
+                relations: ['estado'],
+            });
+            if (!disponibilidad) {
+                throw new NotFoundException(`Disponibilidad con id ${input.disponibilidadId} no encontrada`);
+            }
+            butaca.disponibilidadButaca = disponibilidad;
+        }
+
+        const updated = await this.butacaRepository.save(butaca);
+        return this.toResponse(updated);
+    }
+
+    // 🟢 REMOVE
+    async remove(id: number): Promise<void> {
+        const butaca = await this.butacaRepository.findOne({ where: { id } });
+        if (!butaca) throw new NotFoundException(`Butaca con id ${id} no encontrada`);
+        await this.butacaRepository.remove(butaca);
+    }
+
+    // 🔹 Mapper de Entity -> DTO Response
+    private toResponse(entity: Butaca): ButacaResponse {
+        return {
+            id: entity.id,
+            nroButaca: entity.nroButaca,
+            fila: {
+                letraFila: entity.fila?.letraFila ?? '',
+            },
+            estadoDisponibilidad: {
+                nombre: entity.disponibilidadButaca?.estadoDisponibilidadButaca?.nombre ?? '',
+            },
+        };
+    }
+
+    async getButacaById(id: number): Promise<Butaca> {
+        const butaca = await this.butacaRepository.findOne({ where: { id } });
+        if (!butaca) {
+            throw new NotFoundException(`Butaca con id ${id} no encontrada`);
+        }
+        return butaca;
+    }
 }

@@ -11,7 +11,7 @@ export class Fila {
     letraFila: string;
 
     @OneToMany(() => Butaca, (butaca) => butaca.fila)
-    butaca: Butaca[];
+    butacas: Butaca[];
 
     @ManyToOne(() => Sala, (sala) => sala.filas)
     sala: Sala;

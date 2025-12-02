@@ -13,7 +13,7 @@ export class Butaca {
     @OneToMany(() => DisponibilidadButaca, (disponibilidadButaca) => disponibilidadButaca.butaca)
     disponibilidadButaca: DisponibilidadButaca;
 
-    @ManyToOne(() => Fila, (fila) => fila.butaca)
+    @ManyToOne(() => Fila, (fila) => fila.butacas)
     @JoinColumn({ name: 'fila_id' })
     fila: Fila;
 }

@@ -1,32 +1,44 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Fila } from '../entities/fila.entity';
 import { FilaInput, FilaResponse } from './dto';
-import { Sala } from '../entities/sala.entity';
+import { Butaca } from 'src/entities/butaca.entity';
+import { ButacaService } from 'src/butaca/butaca.service';
 
 @Injectable()
 export class FilaService {
     constructor(
         @InjectRepository(Fila)
         private readonly filaRepository: Repository<Fila>,
-        @InjectRepository(Sala)
-        private readonly salaRepository: Repository<Sala>,
+        private readonly butacaService: ButacaService,
     ) { }
 
-    // 1. Crear fila
-    async create(filaInput: FilaInput): Promise<FilaResponse> {
-        const sala = await this.salaRepository.findOne({ where: { id: filaInput.salaId } });
-        if (!sala) throw new NotFoundException('Sala no encontrada');
+    async createMultiple(cantFilas: number, cantButacasPorFila: number): Promise<Fila[]> {
+        try {
+            const filas: Fila[] = [];
+            const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            for (let i = 0; i < cantFilas; i++) {
+                const butacasACrear: Butaca[] = this.butacaService.createMultipleForFila(cantButacasPorFila);
+                await this.butacaService.saveArray(butacasACrear);
+                const fila = this.filaRepository.create({
+                    letraFila: letras[i],
+                    butacas: butacasACrear,
+                });
+                filas.push(fila);
+            }
+            return filas;
+        } catch (error) {
+            throw new InternalServerErrorException('Error al crear las filas y butacas');
+        }
+    }
 
-        const fila = this.filaRepository.create({
-            letraFila: filaInput.letraFila,
-            sala,
-        });
-
-        const savedFila = await this.filaRepository.save(fila);
-
-        return this.mapToResponse(savedFila);
+    async saveArray(filas: Fila[]): Promise<Fila[]> {
+        try {
+            return this.filaRepository.save(filas);
+        } catch (error) {
+            throw new InternalServerErrorException('Error al guardar las filas');
+        }
     }
 
     // 2. Listar todas las filas
