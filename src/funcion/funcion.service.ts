@@ -18,6 +18,7 @@ export class FuncionService {
     constructor(
         @InjectRepository(Funcion)
         private funcionRepo: Repository<Funcion>,
+        @Inject(forwardRef(() => SalaService))
         private readonly salaService: SalaService,
         private readonly formatoService: FormatoService,
         private readonly estadoDisponibilidadService: EstadoDisponibilidadButacaService,

@@ -12,7 +12,7 @@ import { Funcion } from '../entities/funcion.entity';
     imports: [
         TypeOrmModule.forFeature([Funcion]),
         forwardRef(() => DisponibilidadButacaModule),
-        SalaModule,
+        forwardRef(() => SalaModule),
         FormatoModule,
         EstadoDisponibilidadButacaModule,
     ],

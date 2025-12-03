@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Butaca } from './butaca.entity';
 import { Sala } from './sala.entity';
 
@@ -14,5 +14,6 @@ export class Fila {
     butacas: Butaca[];
 
     @ManyToOne(() => Sala, (sala) => sala.filas)
+    @JoinColumn({ name: 'sala_id' })
     sala: Sala;
 }
