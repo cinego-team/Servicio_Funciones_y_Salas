@@ -1,16 +1,16 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Funcion } from '../entities/funcion.entity';
 import { Repository } from 'typeorm';
+import { SalaService } from '../sala/sala.service';
+import { FormatoService } from '../formato/formato.service';
+import { EstadoDisponibilidadButacaService } from '../estado-disponibilidad-butaca/estado-disponibilidad-butaca.service';
+import { DisponibilidadButacaService } from '../disponibilidad-butaca/disponibilidad-butaca.service';
+import { Funcion } from '../entities/funcion.entity';
+import { Sala } from '../entities/sala.entity';
+import { Formato } from '../entities/formato.entity';
+import { Butaca } from '../entities/butaca.entity';
+import { EstadoButacaEnum } from '../entities/estadoDisponibilidadButaca.entity';
 import { FuncionButacasDetalleResponse, FuncionInput, FuncionResponse } from './dto';
-import { Sala } from 'src/entities/sala.entity';
-import { Formato } from 'src/entities/formato.entity';
-import { Butaca } from 'src/entities/butaca.entity';
-import { EstadoButacaEnum } from 'src/entities/estadoDisponibilidadButaca.entity';
-import { SalaService } from 'src/sala/sala.service';
-import { FormatoService } from 'src/formato/formato.service';
-import { EstadoDisponibilidadButacaService } from 'src/estado-disponibilidad-butaca/estado-disponibilidad-butaca.service';
-import { DisponibilidadButacaService } from 'src/disponibilidad-butaca/disponibilidad-butaca.service';
 
 @Injectable()
 export class FuncionService {
@@ -21,9 +21,8 @@ export class FuncionService {
         private readonly salaService: SalaService,
         private readonly formatoService: FormatoService,
         private readonly estadoDisponibilidadService: EstadoDisponibilidadButacaService,
+        @Inject(forwardRef(() => DisponibilidadButacaService))
         private readonly disponibilidadButacaService: DisponibilidadButacaService,
-
-
     ) { }
 
     async newFuncion(datos: FuncionInput): Promise<FuncionResponse> {
@@ -93,7 +92,7 @@ export class FuncionService {
         }
     }
 
-    async getFuncionById(id: number): Promise<FuncionResponse> {
+    async findOne(id: number): Promise<FuncionResponse> {
         try {
             const constFuncion: Funcion | null = await this.funcionRepo.findOne({
                 where: { id },
@@ -122,7 +121,7 @@ export class FuncionService {
         }
     }
 
-    async updateFuncion(id: number, datos: FuncionInput): Promise<FuncionResponse> {
+    async updateFuncion(id: number, datos: Partial<FuncionInput>): Promise<FuncionResponse> {
         try {
             const constFuncion = await this.funcionRepo.findOne({
                 where: { id },
@@ -137,21 +136,33 @@ export class FuncionService {
             });
             if (!constFuncion) throw new Error('404 Funcion not found.');
 
-            constFuncion.estaDisponible = datos.estaDisponible;
+            if (datos.estaDisponible) {
+                constFuncion.estaDisponible = datos.estaDisponible;
+            }
 
-            constFuncion.fecha = new Date(datos.fecha);
+            if (datos.fecha) {
+                constFuncion.fecha = new Date(datos.fecha);
+            }
 
-            constFuncion.peliculaId = datos.peliculaId;
+            if (datos.peliculaId) {
+                constFuncion.peliculaId = datos.peliculaId;
+            }
 
-            const constSala = await this.salaService.getSalaById(datos.salaId);
-            if (!constSala) throw new NotFoundException('Sala not found.');
-            constFuncion.sala = constSala;
+            if (datos.salaId) {
+                const constSala = await this.salaService.getSalaById(datos.salaId);
+                if (!constSala) throw new NotFoundException('Sala not found.');
+                constFuncion.sala = constSala;
+            }
 
-            const constFormato = await this.formatoService.getFormatoById(datos.formatoId);
-            if (!constFormato) throw new NotFoundException('Formato not found.');
-            constFuncion.formato = constFormato;
+            if (datos.formatoId) {
+                const constFormato = await this.formatoService.getFormatoById(datos.formatoId);
+                if (!constFormato) throw new NotFoundException('Formato not found.');
+                constFuncion.formato = constFormato;
+            }
 
-            constFuncion.usuarioId = datos.usuarioId;
+            if (datos.usuarioId) {
+                constFuncion.usuarioId = datos.usuarioId;
+            }
 
             await this.funcionRepo.save(constFuncion);
 
@@ -242,5 +253,17 @@ export class FuncionService {
             disponibilidadButaca: constFuncion.disponibilidadButaca,
         };
         return response;
+    }
+
+    async getFuncionById(id: number): Promise<Funcion> {
+        try {
+            const funcion = await this.funcionRepo.findOne({ where: { id } });
+            if (!funcion) {
+                throw new NotFoundException(`Función con id ${id} no encontrada`);
+            }
+            return funcion;
+        } catch (error) {
+            throw new InternalServerErrorException('Error al obtener la función por ID', error);
+        }
     }
 }

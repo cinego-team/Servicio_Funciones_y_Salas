@@ -1,16 +1,15 @@
+import { DisponibilidadButaca } from "../entities/disponibilidadButaca.entity";
+import { Fila } from "../entities/fila.entity";
+
 export class ButacaInput {
     nroButaca: number;
     filaId: number;
-    disponibilidadId: number;
+    disponibilidadId?: number;
 }
 
 export class ButacaResponse {
     id: number;
     nroButaca: number;
-    fila: {
-        letraFila: string;
-    };
-    estadoDisponibilidad: {
-        nombre: string;
-    };
+    fila: Fila;
+    disponibilidadButaca: DisponibilidadButaca;
 }

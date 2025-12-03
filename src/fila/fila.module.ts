@@ -1,12 +1,17 @@
-import { Module } from '@nestjs/common';
-import { FilaService } from './fila.service';
-import { FilaController } from './fila.controller';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Fila } from 'src/entities/fila.entity';
-import { Sala } from 'src/entities/sala.entity';
+import { ButacaModule } from '../butaca/butaca.module';
+import { SalaModule } from '../sala/sala.module';
+import { FilaController } from './fila.controller';
+import { FilaService } from './fila.service';
+import { Fila } from '../entities/fila.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Fila, Sala])],
+    imports: [
+        TypeOrmModule.forFeature([Fila]),
+        forwardRef(() => ButacaModule),
+        forwardRef(() => SalaModule),
+    ],
     controllers: [FilaController],
     providers: [FilaService],
     exports: [FilaService],

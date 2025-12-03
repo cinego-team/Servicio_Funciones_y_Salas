@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { FilaModule } from './fila/fila.module';
 import { ButacaModule } from './butaca/butaca.module';
 import { EstadoDisponibilidadButacaModule } from './estado-disponibilidad-butaca/estado-disponibilidad-butaca.module';
 import { DisponibilidadButacaModule } from './disponibilidad-butaca/disponibilidad-butaca.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { FormatoModule } from './formato/formato.module';
+import { FuncionModule } from './funcion/funcion.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { DisponibilidadButaca } from './entities/disponibilidadButaca.entity';
 import { Butaca } from './entities/butaca.entity';
 import { EstadoDisponibilidadButaca } from './entities/estadoDisponibilidadButaca.entity';
@@ -25,10 +27,14 @@ import { Sala } from './entities/sala.entity';
         entities: [Butaca, DisponibilidadButaca, EstadoDisponibilidadButaca, Fila, Formato, Funcion, Sala],
         synchronize: true,
     }),
-        FilaModule,
         ButacaModule,
+        DisponibilidadButacaModule,
         EstadoDisponibilidadButacaModule,
-        DisponibilidadButacaModule
+        FilaModule,
+        FormatoModule,
+        FuncionModule,
+        FilaModule
+
     ],
     controllers: [AppController],
     providers: [AppService],

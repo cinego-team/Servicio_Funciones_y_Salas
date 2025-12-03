@@ -13,7 +13,6 @@ export class Sala {
     @Column({ name: 'nro_sala' })
     nroSala: number;
 
-    // Relaciones
     @OneToMany(() => Funcion, (funcion) => funcion.sala)
     funciones: Funcion[];
 

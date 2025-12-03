@@ -12,7 +12,6 @@ export class Formato {
     @Column({ type: 'decimal', precision: 10, scale: 2 })
     precio: number;
 
-    // Relaciones
     @OneToMany(() => Funcion, (funcion) => funcion.formato)
     funciones: Funcion[];
 }

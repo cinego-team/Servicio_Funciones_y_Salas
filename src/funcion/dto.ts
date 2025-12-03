@@ -1,6 +1,6 @@
-import { DisponibilidadButaca } from 'src/entities/disponibilidadButaca.entity';
-import { Formato } from "src/entities/formato.entity";
-import { Sala } from "src/entities/sala.entity";
+import { DisponibilidadButaca } from '../entities/disponibilidadButaca.entity';
+import { Formato } from "../entities/formato.entity";
+import { Sala } from "../entities/sala.entity";
 
 export class FuncionInput {
     estaDisponible: boolean;

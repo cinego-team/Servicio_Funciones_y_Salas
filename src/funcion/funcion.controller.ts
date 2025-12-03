@@ -14,7 +14,7 @@ export class FuncionController {
 
     @Get(':id')
     async getFuncion(@Param('id', ParseIntPipe) id: number): Promise<FuncionResponse> {
-        return this.funcionService.getFuncionById(id);
+        return this.funcionService.findOne(id);
     }
 
     @Get('pelicula/:peliculaId')
@@ -23,7 +23,7 @@ export class FuncionController {
     }
 
     @Put(':id')
-    async updateFuncion(@Param('id', ParseIntPipe) id: number, @Body() datos: FuncionInput): Promise<FuncionResponse> {
+    async updateFuncion(@Param('id', ParseIntPipe) id: number, @Body() datos: Partial<FuncionInput>): Promise<FuncionResponse> {
         return this.funcionService.updateFuncion(id, datos);
     }
 

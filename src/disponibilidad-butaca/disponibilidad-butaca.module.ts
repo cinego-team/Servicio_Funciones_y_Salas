@@ -1,22 +1,21 @@
-import { Module } from '@nestjs/common';
-import { DisponibilidadButacaService } from './disponibilidad-butaca.service';
-import { DisponibilidadButacaController } from './disponibilidad-butaca.controller';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DisponibilidadButaca } from 'src/entities/disponibilidadButaca.entity';
-import { Funcion } from 'src/entities/funcion.entity';
-import { Butaca } from 'src/entities/butaca.entity';
-import { EstadoDisponibilidadButaca } from 'src/entities/estadoDisponibilidadButaca.entity';
+import { ButacaModule } from '../butaca/butaca.module';
+import { FuncionModule } from '../funcion/funcion.module';
+import { EstadoDisponibilidadButacaModule } from '../estado-disponibilidad-butaca/estado-disponibilidad-butaca.module';
+import { DisponibilidadButacaController } from './disponibilidad-butaca.controller';
+import { DisponibilidadButacaService } from './disponibilidad-butaca.service';
+import { DisponibilidadButaca } from '../entities/disponibilidadButaca.entity';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([
-            DisponibilidadButaca,
-            Funcion,
-            Butaca,
-            EstadoDisponibilidadButaca,
-        ]),
+        TypeOrmModule.forFeature([DisponibilidadButaca]),
+        forwardRef(() => ButacaModule),
+        forwardRef(() => FuncionModule),
+        EstadoDisponibilidadButacaModule,
     ],
     controllers: [DisponibilidadButacaController],
     providers: [DisponibilidadButacaService],
+    exports: [DisponibilidadButacaService],
 })
 export class DisponibilidadButacaModule { }

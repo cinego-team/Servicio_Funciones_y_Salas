@@ -1,9 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EstadoDisponibilidadButaca } from '../entities/estadoDisponibilidadButaca.entity';
-import { EstadoDisponibilidadInput, EstadoDisponibilidadResponse } from './dto';
 import { EstadoButacaEnum } from '../entities/estadoDisponibilidadButaca.entity';
+import { EstadoDisponibilidadInput, EstadoDisponibilidadResponse } from './dto';
 
 @Injectable()
 export class EstadoDisponibilidadButacaService {
@@ -12,58 +12,103 @@ export class EstadoDisponibilidadButacaService {
         private readonly estadoRepo: Repository<EstadoDisponibilidadButaca>,
     ) { }
 
-    // 🟢 CREATE
     async create(input: EstadoDisponibilidadInput): Promise<EstadoDisponibilidadResponse> {
-        const estado = this.estadoRepo.create({ nombre: input.nombre });
-        const saved = await this.estadoRepo.save(estado);
-        return this.toResponse(saved);
+        try {
+            const estado = this.estadoRepo.create({ nombre: input.nombre });
+            const saved = await this.estadoRepo.save(estado);
+            const response: EstadoDisponibilidadResponse = {
+                id: saved.id,
+                nombre: saved.nombre,
+            };
+            return response;
+        } catch (error) {
+            throw new InternalServerErrorException('Error al crear el estado de disponibilidad de butaca');
+        }
     }
 
-    // 🟢 FIND ALL
     async findAll(): Promise<EstadoDisponibilidadResponse[]> {
-        const estados = await this.estadoRepo.find();
-        return estados.map((e) => this.toResponse(e));
+        try {
+            const estados = await this.estadoRepo.find();
+            if (!estados || estados.length === 0) {
+                throw new NotFoundException('No se encontraron estados de disponibilidad de butaca');
+            }
+            const response: EstadoDisponibilidadResponse[] = estados.map(estado => ({
+                id: estado.id,
+                nombre: estado.nombre,
+            }));
+            return response;
+        } catch (error) {
+            throw new InternalServerErrorException('Error al obtener los estados de disponibilidad de butaca');
+        }
     }
 
-    // 🟢 FIND ONE
     async findOne(id: number): Promise<EstadoDisponibilidadResponse> {
-        const estado = await this.estadoRepo.findOne({ where: { id } });
-        if (!estado) throw new NotFoundException(`Estado con id ${id} no encontrado`);
-        return this.toResponse(estado);
+        try {
+            const estado = await this.estadoRepo.findOne({ where: { id } });
+            if (!estado) throw new NotFoundException(`Estado con id ${id} no encontrado`);
+            const response: EstadoDisponibilidadResponse = {
+                id: estado.id,
+                nombre: estado.nombre,
+            };
+            return response;
+        } catch (error) {
+            throw new InternalServerErrorException(`Error al obtener el estado con id ${id}`);
+        }
     }
 
-    // 🟢 UPDATE
     async update(id: number, input: EstadoDisponibilidadInput): Promise<EstadoDisponibilidadResponse> {
-        const estado = await this.estadoRepo.findOne({ where: { id } });
-        if (!estado) throw new NotFoundException(`Estado con id ${id} no encontrado`);
+        try {
+            const estado = await this.estadoRepo.findOne({ where: { id } });
+            if (!estado) throw new NotFoundException(`Estado con id ${id} no encontrado`);
 
-        estado.nombre = input.nombre;
-        const updated = await this.estadoRepo.save(estado);
-        return this.toResponse(updated);
+            if (input.nombre) {
+                estado.nombre = input.nombre;
+            }
+
+            await this.estadoRepo.save(estado);
+
+            const response: EstadoDisponibilidadResponse = {
+                id: estado.id,
+                nombre: estado.nombre,
+            };
+            return response;
+        } catch (error) {
+            throw new InternalServerErrorException(`Error al actualizar el estado con id ${id}`);
+        }
     }
 
-    // 🟢 REMOVE
     async remove(id: number): Promise<void> {
-        const estado = await this.estadoRepo.findOne({ where: { id } });
-        if (!estado) throw new NotFoundException(`Estado con id ${id} no encontrado`);
-        await this.estadoRepo.remove(estado);
-    }
-
-    // 🔹 Mapper: Entity → DTO Response
-    private toResponse(entity: EstadoDisponibilidadButaca): EstadoDisponibilidadResponse {
-        return {
-            id: entity.id,
-            nombre: entity.nombre,
-        };
+        try {
+            const result = await this.estadoRepo.delete(id);
+            if (result.affected === 0) {
+                throw new NotFoundException(`Estado con id ${id} no encontrado`);
+            }
+        } catch (error) {
+            throw new InternalServerErrorException(`Error al eliminar el estado con id ${id}`);
+        }
     }
 
     async getByEnum(nombre: EstadoButacaEnum): Promise<EstadoDisponibilidadButaca> {
-        const estado = await this.estadoRepo.findOne({
-            where: { nombre },
-        });
-        if (!estado) {
-            throw new NotFoundException(`EstadoDisponibilidadButaca with name ${nombre} not found`);
+        try {
+            const estado = await this.estadoRepo.findOne({
+                where: { nombre },
+            });
+            if (!estado) {
+                throw new NotFoundException(`EstadoDisponibilidadButaca with name ${nombre} not found`);
+            }
+            return estado;
+        } catch (error) {
+            throw new InternalServerErrorException('Error retrieving EstadoDisponibilidadButaca by name');
         }
-        return estado;
+    }
+
+    async getEstadoByNombre(nombre: EstadoButacaEnum): Promise<EstadoDisponibilidadButaca> {
+        try {
+            const estado = await this.estadoRepo.findOne({ where: { nombre } });
+            if (!estado) throw new NotFoundException(`Estado con nombre ${nombre} no encontrado`);
+            return estado;
+        } catch (error) {
+            throw new NotFoundException(`Error al obtener el estado con nombre ${nombre}`);
+        }
     }
 }

@@ -1,4 +1,4 @@
-import { EstadoButacaEnum } from "src/entities/estadoDisponibilidadButaca.entity";
+import { EstadoButacaEnum } from "../entities/estadoDisponibilidadButaca.entity";
 
 export class EstadoDisponibilidadInput {
     nombre: EstadoButacaEnum;

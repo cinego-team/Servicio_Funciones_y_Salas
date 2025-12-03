@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { FormatoService } from './formato.service';
-import { FormatoController } from './formato.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Formato } from 'src/entities/formato.entity';
+import { FormatoController } from './formato.controller';
+import { FormatoService } from './formato.service';
+import { Formato } from '../entities/formato.entity';
 
 @Module({
     imports: [TypeOrmModule.forFeature([Formato])],

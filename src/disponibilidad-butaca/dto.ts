@@ -1,4 +1,10 @@
-import { EstadoButacaEnum } from "src/entities/estadoDisponibilidadButaca.entity";
+import { EstadoButacaEnum } from "../entities/estadoDisponibilidadButaca.entity";
+
+export class DisponibilidadButacaInput {
+    funcionId: number
+    butacaId: number;
+    estadoDisponibilidadButacaId: EstadoButacaEnum;
+}
 
 export class DisponibilidadButacaResponse {
     id: number;
@@ -7,7 +13,6 @@ export class DisponibilidadButacaResponse {
     estadoDisponibilidadButacaId: EstadoButacaEnum;
 }
 
-// DTO para cambiar estado de múltiples butacas
 export class CambiarEstadoButacasInput {
     disponibilidadButacaIds: number[];
 }
