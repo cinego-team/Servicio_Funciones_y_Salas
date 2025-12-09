@@ -10,7 +10,7 @@ import { Sala } from '../entities/sala.entity';
 import { Formato } from '../entities/formato.entity';
 import { Butaca } from '../entities/butaca.entity';
 import { EstadoButacaEnum } from '../entities/estadoDisponibilidadButaca.entity';
-import { FuncionButacasDetalleResponse, FuncionInput, FuncionResponse } from './dto';
+import { ButacasDetalleResponse, FuncionInput, FuncionResponse } from './dto';
 
 @Injectable()
 export class FuncionService {
@@ -85,7 +85,6 @@ export class FuncionService {
                 sala: funcionConRelaciones.sala,
                 formato: funcionConRelaciones.formato,
                 usuarioId: funcionConRelaciones.usuarioId,
-                disponibilidadButaca: funcionConRelaciones.disponibilidadButaca,
             };
             return response;
         } catch (error) {
@@ -99,8 +98,7 @@ export class FuncionService {
                 where: { id },
                 relations: {
                     sala: true,
-                    formato: true,
-                    disponibilidadButaca: true,
+                    formato: true
                 },
             });
 
@@ -114,7 +112,6 @@ export class FuncionService {
                 sala: constFuncion.sala,
                 formato: constFuncion.formato,
                 usuarioId: constFuncion.usuarioId,
-                disponibilidadButaca: constFuncion.disponibilidadButaca,
             };
             return response;
         } catch (error) {
@@ -175,7 +172,6 @@ export class FuncionService {
                 sala: constFuncion.sala,
                 formato: constFuncion.formato,
                 usuarioId: constFuncion.usuarioId,
-                disponibilidadButaca: constFuncion.disponibilidadButaca,
             };
             return response;
         } catch (error) {
@@ -229,15 +225,15 @@ export class FuncionService {
         }
     }
 
-    async getFuncionWithButacasDetails(id: number): Promise<FuncionButacasDetalleResponse> {
+    async getButacasDetails(id: number): Promise<ButacasDetalleResponse> {
         const constFuncion = await this.funcionRepo.findOne({
             where: { id },
             relations: [
                 'disponibilidadButaca',
                 'disponibilidadButaca.estadoDisponibilidadButaca',
                 'disponibilidadButaca.butaca',
-                'disponibilidadButaca.butaca,fila',
-                'disponibilidadButaca.butaca,fila.sala',
+                'disponibilidadButaca.butaca.fila',
+                'disponibilidadButaca.butaca.fila.sala',
             ],
         });
 
@@ -249,8 +245,7 @@ export class FuncionService {
             throw new NotFoundException('La función no está disponible.');
         }
 
-        const response: FuncionButacasDetalleResponse = {
-            id: constFuncion.id,
+        const response: ButacasDetalleResponse = {
             disponibilidadButaca: constFuncion.disponibilidadButaca,
         };
         return response;

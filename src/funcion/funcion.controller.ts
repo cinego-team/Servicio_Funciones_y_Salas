@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Put, Delete, Param, Body, ParseIntPipe } from '@nestjs/common';
 import { FuncionService } from './funcion.service';
-import { FuncionButacasDetalleResponse, FuncionInput } from './dto';
+import { ButacasDetalleResponse, FuncionInput } from './dto';
 import { FuncionResponse } from './dto';
 
-@Controller('funciones')
+@Controller('funcion')
 export class FuncionController {
     constructor(private readonly funcionService: FuncionService) { }
 
@@ -17,7 +17,7 @@ export class FuncionController {
         return this.funcionService.findOne(id);
     }
 
-    @Get('pelicula/:peliculaId')
+    @Get('funciones-por-pelicula/:peliculaId')
     async getFuncionesByPeliculaId(@Param('peliculaId', ParseIntPipe) peliculaId: number): Promise<FuncionResponse[]> {
         return this.funcionService.getFuncionesByPeliculaId(peliculaId);
     }
@@ -33,7 +33,7 @@ export class FuncionController {
     }
 
     @Get(':id/butacas-detalle')
-    async getFuncionWithButacasDetails(@Param('id', ParseIntPipe) id: number): Promise<FuncionButacasDetalleResponse> {
-        return this.funcionService.getFuncionWithButacasDetails(id);
+    async getButacasDetails(@Param('id', ParseIntPipe) id: number): Promise<ButacasDetalleResponse> {
+        return this.funcionService.getButacasDetails(id);
     }
 }

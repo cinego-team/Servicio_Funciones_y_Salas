@@ -19,10 +19,8 @@ export class FuncionResponse {
     sala: Sala;
     formato: Formato;
     usuarioId: number;
-    disponibilidadButaca: DisponibilidadButaca[];
 }
 
-export class FuncionButacasDetalleResponse {
-    id: number;
+export class ButacasDetalleResponse {
     disponibilidadButaca: DisponibilidadButaca[];
 }
