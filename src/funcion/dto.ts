@@ -1,6 +1,6 @@
 import { DisponibilidadButaca } from '../entities/disponibilidadButaca.entity';
-import { Formato } from "../entities/formato.entity";
-import { Sala } from "../entities/sala.entity";
+import { Formato } from '../entities/formato.entity';
+import { Sala } from '../entities/sala.entity';
 
 export class FuncionInput {
     estaDisponible: boolean;
@@ -15,7 +15,7 @@ export class FuncionResponse {
     id: number;
     estaDisponible: boolean;
     fecha: Date;
-    peliculaId: number
+    peliculaId: number;
     sala: Sala;
     formato: Formato;
     usuarioId: number;
@@ -23,4 +23,41 @@ export class FuncionResponse {
 
 export class ButacasDetalleResponse {
     disponibilidadButaca: DisponibilidadButaca[];
+}
+export class FuncionInputAdmin {
+    peliculaId: number;
+    fecha: Date;
+    estaDisponible: boolean;
+    idioma: {
+        id: number;
+        nombre: string;
+    };
+    sala: {
+        id: number;
+        nroSala: number;
+    };
+    formato: {
+        id: number;
+        nombre: string;
+        precio: number;
+    };
+}
+export class FuncionResponseAdmin {
+    id: number;
+    peliculaId: number;
+    fecha: Date;
+    estaDisponible: boolean;
+    idioma: {
+        id: number;
+        nombre: string;
+    };
+    sala: {
+        id: number;
+        nroSala: number;
+    };
+    formato: {
+        id: number;
+        nombre: string;
+        precio: number;
+    };
 }

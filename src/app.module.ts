@@ -15,6 +15,7 @@ import { Fila } from './entities/fila.entity';
 import { Formato } from './entities/formato.entity';
 import { Funcion } from './entities/funcion.entity';
 import { Sala } from './entities/sala.entity';
+import { IdiomaModule } from './idioma/idioma.module';
 
 @Module({
     imports: [TypeOrmModule.forRoot({
@@ -33,7 +34,8 @@ import { Sala } from './entities/sala.entity';
         FilaModule,
         FormatoModule,
         FuncionModule,
-        FilaModule
+        FilaModule,
+        IdiomaModule
 
     ],
     controllers: [AppController],

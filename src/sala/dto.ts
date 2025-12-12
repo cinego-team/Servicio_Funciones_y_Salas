@@ -12,3 +12,7 @@ export class SalaResponse {
     cantFilas: number;
     cantButacasPorFila: number;
 }
+export class SalaResponseForSelec {
+    id: number;
+    nroSala: number;
+}

@@ -1,4 +1,4 @@
-import { Funcion } from "../entities/funcion.entity";
+import { Funcion } from '../entities/funcion.entity';
 
 export class FormatoInput {
     nombre: string;
@@ -9,4 +9,9 @@ export class FormatoResponse {
     nombre: string;
     precio: number;
     funciones?: Funcion[];
+}
+export class FormatoResponseAdmin {
+    id: number;
+    nombre: string;
+    precio: number;
 }

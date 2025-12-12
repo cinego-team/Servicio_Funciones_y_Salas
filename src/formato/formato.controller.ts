@@ -1,12 +1,21 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, ParseIntPipe } from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    Post,
+    Put,
+    Delete,
+    Param,
+    Body,
+    ParseIntPipe,
+} from '@nestjs/common';
 import { FormatoService } from './formato.service';
 import { FormatoInput, FormatoResponse } from './dto';
 
 @Controller('formato')
 export class FormatoController {
-    constructor(private readonly formatoService: FormatoService) { }
+    constructor(private readonly formatoService: FormatoService) {}
 
-    @Post()
+    @Post('new/admin')
     async create(@Body() body: FormatoInput): Promise<FormatoResponse> {
         return this.formatoService.create(body);
     }
@@ -17,20 +26,33 @@ export class FormatoController {
     }
 
     @Get(':id')
-    async findOne(@Param('id', ParseIntPipe) id: number): Promise<FormatoResponse> {
+    async findOne(
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<FormatoResponse> {
         return this.formatoService.findOne(id);
     }
 
-    @Put(':id')
+    @Put(':id/admin')
     async update(
         @Param('id', ParseIntPipe) id: number,
-        @Body() body: Partial<FormatoInput>
+        @Body() body: Partial<FormatoInput>,
     ): Promise<FormatoResponse> {
         return this.formatoService.update(id, body);
     }
 
-    @Delete(':id')
+    @Delete(':id/admin')
     async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
         return this.formatoService.remove(id);
+    }
+
+    @Get('admin/all')
+    async findAllAdmin(): Promise<FormatoResponse[]> {
+        return this.formatoService.findAllAdmin();
+    }
+    @Get(':id/admin')
+    async findOneAdmin(
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<FormatoResponse> {
+        return this.formatoService.findOneAdmin(id);
     }
 }
