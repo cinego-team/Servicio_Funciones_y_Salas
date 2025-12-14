@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -75,5 +75,14 @@ export class IdiomaService {
         if (!idioma) throw new Error('404 Idioma not found.');
         await this.idiomaRepo.remove(idioma);
         return { message: 'Deleted' };
+    }
+    async getIdiomaByIdForPut(id: number): Promise<Idioma> {
+        const idioma = await this.idiomaRepo.findOne({ where: { id } });
+
+        if (!idioma) {
+            throw new NotFoundException('Idioma no existe');
+        }
+
+        return idioma;
     }
 }

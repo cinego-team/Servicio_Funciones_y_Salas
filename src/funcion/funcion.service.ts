@@ -486,16 +486,15 @@ export class FuncionService {
         }
 
         if (dto.idioma?.id) {
-            const idiomaEntity = await this.idiomaService.getIdiomaById(
+            const idiomaEntity = await this.idiomaService.getIdiomaByIdForPut(
                 dto.idioma.id,
             );
             funcion.idioma = idiomaEntity;
         }
 
         if (dto.formato?.id) {
-            const formatoEntity = await this.formatoService.findOne(
-                dto.formato.id,
-            );
+            const formatoEntity =
+                await this.formatoService.findOneFormatoForPut(dto.formato.id);
             funcion.formato = formatoEntity;
         }
         if (dto.fecha !== undefined) {

@@ -11,7 +11,7 @@ import {
     ParseIntPipe,
 } from '@nestjs/common';
 import { IdiomaService } from './idioma.service';
-import { IdiomaInput } from './dto';
+import { IdiomaInput, IdiomaResponse } from './dto';
 
 @Controller('idioma')
 export class IdiomaController {
@@ -51,5 +51,16 @@ export class IdiomaController {
     @Delete(':id/admin')
     delete(@Param('id', ParseIntPipe) id: number) {
         return this.service.deleteIdiomaById(id);
+    }
+    @Get(':id')
+    async getIdiomaById(
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<IdiomaResponse> {
+        const idiomaEntity = await this.service.getIdiomaByIdForPut(id);
+
+        return {
+            id: idiomaEntity.id,
+            nombre: idiomaEntity.nombre,
+        };
     }
 }

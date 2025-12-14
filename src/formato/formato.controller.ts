@@ -55,4 +55,18 @@ export class FormatoController {
     ): Promise<FormatoResponse> {
         return this.formatoService.findOneAdmin(id);
     }
+    @Get(':id/admin')
+    async findOneFormatoForPut(
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<FormatoResponse> {
+        const formatoEntity = await this.formatoService.findOneFormatoForPut(
+            id,
+        );
+
+        return {
+            id: formatoEntity.id,
+            nombre: formatoEntity.nombre,
+            precio: formatoEntity.precio,
+        };
+    }
 }

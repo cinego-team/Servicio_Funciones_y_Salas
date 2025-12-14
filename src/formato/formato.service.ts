@@ -206,4 +206,13 @@ export class FormatoService {
             );
         }
     }
+    async findOneFormatoForPut(id: number): Promise<Formato> {
+        const formato = await this.formatoRepository.findOne({ where: { id } });
+
+        if (!formato) {
+            throw new NotFoundException('Formato no existe');
+        }
+
+        return formato;
+    }
 }
