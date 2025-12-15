@@ -47,13 +47,6 @@ export class FuncionController {
         return this.funcionService.updateFuncion(id, datos);
     }
 
-    @Delete(':id')
-    async deleteFuncion(
-        @Param('id', ParseIntPipe) id: number,
-    ): Promise<{ message: string }> {
-        return this.funcionService.deleteFuncionById(id);
-    }
-
     @Get(':id/butacas-detalle')
     async getButacasDetails(
         @Param('id', ParseIntPipe) id: number,
@@ -70,10 +63,23 @@ export class FuncionController {
     ): Promise<FuncionResponseAdmin> {
         return this.funcionService.getFuncById(id);
     }
-    @Post('new/admin')
+    @Post('admin/new')
     async createFuncionAdmin(
         @Body() datos: FuncionInputAdmin,
     ): Promise<FuncionResponseAdmin> {
         return this.funcionService.createFuncionAdmin(datos);
+    }
+    @Delete('admin/:id')
+    async deleteFuncion(
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<{ message: string }> {
+        return this.funcionService.deleteFuncionById(id);
+    }
+    @Put('admin/:id')
+    async updateFuncionAdmin(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() datos: Partial<FuncionInputAdmin>,
+    ): Promise<FuncionResponseAdmin> {
+        return this.funcionService.updateFuncionAdmin(id, datos);
     }
 }

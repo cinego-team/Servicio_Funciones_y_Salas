@@ -15,7 +15,7 @@ import { SalaInput, SalaResponse, SalaResponseForSelec } from './dto';
 export class SalaController {
     constructor(private readonly salaService: SalaService) {}
 
-    @Post('new/admin')
+    @Post('admin/new')
     async create(@Body() data: SalaInput): Promise<SalaResponse> {
         return this.salaService.create(data);
     }
@@ -25,14 +25,14 @@ export class SalaController {
         return this.salaService.findAll();
     }
 
-    @Get(':id/admin')
+    @Get('admin/:id')
     async findOne(
         @Param('id', ParseIntPipe) id: number,
     ): Promise<SalaResponse> {
         return this.salaService.findOne(id);
     }
 
-    @Put(':id/admin')
+    @Put('admin/:id')
     async update(
         @Param('id', ParseIntPipe) id: number,
         @Body() data: Partial<SalaInput>,
@@ -40,7 +40,7 @@ export class SalaController {
         return this.salaService.update(id, data);
     }
 
-    @Delete(':id/admin')
+    @Delete('admin/:id')
     async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
         return this.salaService.remove(id);
     }

@@ -456,7 +456,7 @@ export class FuncionService {
     async updateFuncionAdmin(
         id: number,
         dto: Partial<FuncionInputAdmin>,
-    ): Promise<void> {
+    ): Promise<FuncionResponseAdmin> {
         const funcion = await this.funcionRepo.findOne({
             where: { id },
             relations: ['sala', 'idioma', 'formato'],
@@ -498,8 +498,7 @@ export class FuncionService {
             funcion.formato = formatoEntity;
         }
         if (dto.fecha !== undefined) {
-            funcion.fecha =
-                typeof dto.fecha === 'string' ? new Date(dto.fecha) : dto.fecha;
+            funcion.fecha = dto.fecha;
         }
 
         if (dto.estaDisponible !== undefined) {
@@ -510,5 +509,6 @@ export class FuncionService {
         }
 
         await this.funcionRepo.save(funcion);
+        return funcion;
     }
 }

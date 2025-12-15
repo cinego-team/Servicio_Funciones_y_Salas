@@ -15,7 +15,7 @@ import { FormatoInput, FormatoResponse } from './dto';
 export class FormatoController {
     constructor(private readonly formatoService: FormatoService) {}
 
-    @Post('new/admin')
+    @Post('admin/new')
     async create(@Body() body: FormatoInput): Promise<FormatoResponse> {
         return this.formatoService.create(body);
     }
@@ -32,7 +32,7 @@ export class FormatoController {
         return this.formatoService.findOne(id);
     }
 
-    @Put(':id/admin')
+    @Put('admin/:id')
     async update(
         @Param('id', ParseIntPipe) id: number,
         @Body() body: Partial<FormatoInput>,
@@ -40,7 +40,7 @@ export class FormatoController {
         return this.formatoService.update(id, body);
     }
 
-    @Delete(':id/admin')
+    @Delete('admin/:id')
     async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
         return this.formatoService.remove(id);
     }
@@ -49,7 +49,7 @@ export class FormatoController {
     async findAllAdmin(): Promise<FormatoResponse[]> {
         return this.formatoService.findAllAdmin();
     }
-    @Get(':id/admin')
+    @Get('admin/:id')
     async findOneAdmin(
         @Param('id', ParseIntPipe) id: number,
     ): Promise<FormatoResponse> {
