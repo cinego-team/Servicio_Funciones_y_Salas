@@ -16,18 +16,29 @@ import { Formato } from './entities/formato.entity';
 import { Funcion } from './entities/funcion.entity';
 import { Sala } from './entities/sala.entity';
 import { IdiomaModule } from './idioma/idioma.module';
+import { Idioma } from './entities/idioma.entity';
 
 @Module({
-    imports: [TypeOrmModule.forRoot({
-        type: 'postgres',
-        host: 'localhost',
-        port: 5432,
-        database: 'msfuncionesysalas',
-        username: 'postgres',
-        password: 'grupou',
-        entities: [Butaca, DisponibilidadButaca, EstadoDisponibilidadButaca, Fila, Formato, Funcion, Sala],
-        synchronize: true,
-    }),
+    imports: [
+        TypeOrmModule.forRoot({
+            type: 'postgres',
+            host: 'localhost',
+            port: 5432,
+            database: 'msfuncionesysalas',
+            username: 'postgres',
+            password: 'grupou',
+            entities: [
+                Butaca,
+                DisponibilidadButaca,
+                EstadoDisponibilidadButaca,
+                Fila,
+                Formato,
+                Funcion,
+                Sala,
+                Idioma,
+            ],
+            synchronize: true,
+        }),
         ButacaModule,
         DisponibilidadButacaModule,
         EstadoDisponibilidadButacaModule,
@@ -35,10 +46,9 @@ import { IdiomaModule } from './idioma/idioma.module';
         FormatoModule,
         FuncionModule,
         FilaModule,
-        IdiomaModule
-
+        IdiomaModule,
     ],
     controllers: [AppController],
     providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

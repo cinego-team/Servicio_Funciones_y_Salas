@@ -7,6 +7,7 @@ import { EstadoDisponibilidadButacaModule } from '../estado-disponibilidad-butac
 import { FuncionController } from './funcion.controller';
 import { FuncionService } from './funcion.service';
 import { Funcion } from '../entities/funcion.entity';
+import { IdiomaModule } from 'src/idioma/idioma.module';
 
 @Module({
     imports: [
@@ -15,9 +16,11 @@ import { Funcion } from '../entities/funcion.entity';
         forwardRef(() => SalaModule),
         FormatoModule,
         EstadoDisponibilidadButacaModule,
+        IdiomaModule,
     ],
+
     controllers: [FuncionController],
     providers: [FuncionService],
     exports: [FuncionService],
 })
-export class FuncionModule { }
+export class FuncionModule {}

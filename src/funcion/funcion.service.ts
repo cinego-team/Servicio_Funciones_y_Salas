@@ -234,42 +234,37 @@ export class FuncionService {
         }
     }
 
-    async getFuncionesByPeliculaId(id: number): Promise<FuncionResponse[]> {
-        try {
-            const funciones = await this.funcionRepo.find({
-                where: { id },
-                relations: {
-                    sala: true,
-                    formato: true,
-                    disponibilidadButaca: {
-                        butaca: true,
-                        estadoDisponibilidadButaca: true,
-                    },
+    async getFuncionesByPeliculaId(
+        peliculaId: number,
+    ): Promise<FuncionResponse[]> {
+        const funciones = await this.funcionRepo.find({
+            where: { peliculaId },
+            relations: {
+                sala: true,
+                formato: true,
+                disponibilidadButaca: {
+                    butaca: true,
+                    estadoDisponibilidadButaca: true,
                 },
-            });
+            },
+        });
 
-            if (!funciones || funciones.length === 0) {
-                throw new NotFoundException(
-                    'No se encontraron funciones para esta película.',
-                );
-            }
-
-            return funciones.map((funcion) => ({
-                id: funcion.id,
-                estaDisponible: funcion.estaDisponible,
-                fecha: funcion.fecha,
-                peliculaId: funcion.peliculaId,
-                sala: funcion.sala,
-                formato: funcion.formato,
-                disponibilidadButaca: funcion.disponibilidadButaca,
-                usuarioId: funcion.usuarioId,
-            }));
-        } catch (error) {
-            throw new InternalServerErrorException(
-                'Error fetching Funciones by Pelicula ID',
-                error,
+        if (!funciones.length) {
+            throw new NotFoundException(
+                'No se encontraron funciones para esta película.',
             );
         }
+
+        return funciones.map((funcion) => ({
+            id: funcion.id,
+            estaDisponible: funcion.estaDisponible,
+            fecha: funcion.fecha,
+            peliculaId: funcion.peliculaId,
+            sala: funcion.sala,
+            formato: funcion.formato,
+            disponibilidadButaca: funcion.disponibilidadButaca,
+            usuarioId: funcion.usuarioId,
+        }));
     }
 
     async deleteFuncionById(id: number): Promise<{ message: string }> {
