@@ -236,10 +236,11 @@ export class FuncionService {
 
     async getFuncionesByPeliculaId(
         peliculaId: number,
-    ): Promise<FuncionResponse[]> {
+    ): Promise<FuncionResponseAdmin[]> {
         const funciones = await this.funcionRepo.find({
             where: { peliculaId },
             relations: {
+                idioma: true,
                 sala: true,
                 formato: true,
                 disponibilidadButaca: {
@@ -260,6 +261,7 @@ export class FuncionService {
             estaDisponible: funcion.estaDisponible,
             fecha: funcion.fecha,
             peliculaId: funcion.peliculaId,
+            idioma: funcion.idioma,
             sala: funcion.sala,
             formato: funcion.formato,
             disponibilidadButaca: funcion.disponibilidadButaca,
