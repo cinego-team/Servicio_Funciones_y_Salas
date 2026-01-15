@@ -35,7 +35,7 @@ export class FuncionController {
     @Get('funciones-por-pelicula/:peliculaId')
     async getFuncionesByPeliculaId(
         @Param('peliculaId', ParseIntPipe) peliculaId: number,
-    ): Promise<FuncionResponse[]> {
+    ): Promise<FuncionResponseAdmin[]> {
         return this.funcionService.getFuncionesByPeliculaId(peliculaId);
     }
 
