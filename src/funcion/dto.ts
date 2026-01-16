@@ -50,14 +50,14 @@ export class FuncionResponseAdmin {
     idioma: {
         id: number;
         nombre: string;
-    };
+    } | null;
     sala: {
         id: number;
         nroSala: number;
-    };
+    } | null;
     formato: {
         id: number;
         nombre: string;
         precio: number;
-    };
+    } | null;
 }

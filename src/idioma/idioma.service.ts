@@ -70,12 +70,18 @@ export class IdiomaService {
     }
     async deleteIdiomaById(id: number): Promise<{ message: string }> {
         const idioma = await this.idiomaRepo.findOne({
-            where: { id: id },
+            where: { id },
         });
-        if (!idioma) throw new Error('404 Idioma not found.');
+
+        if (!idioma) {
+            throw new NotFoundException('Idioma no encontrado');
+        }
+
         await this.idiomaRepo.remove(idioma);
+
         return { message: 'Deleted' };
     }
+
     async getIdiomaByIdForPut(id: number): Promise<Idioma> {
         const idioma = await this.idiomaRepo.findOne({ where: { id } });
 

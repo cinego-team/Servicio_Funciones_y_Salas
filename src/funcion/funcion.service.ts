@@ -341,19 +341,28 @@ export class FuncionService {
                 peliculaId: funcion.peliculaId,
                 fecha: funcion.fecha,
                 estaDisponible: funcion.estaDisponible,
-                idioma: {
-                    id: funcion.idioma.id,
-                    nombre: funcion.idioma.nombre,
-                },
-                sala: {
-                    id: funcion.sala.id,
-                    nroSala: funcion.sala.nroSala,
-                },
-                formato: {
-                    id: funcion.formato.id,
-                    nombre: funcion.formato.nombre,
-                    precio: funcion.formato.precio,
-                },
+
+                idioma: funcion.idioma
+                    ? {
+                          id: funcion.idioma.id,
+                          nombre: funcion.idioma.nombre,
+                      }
+                    : null,
+
+                sala: funcion.sala
+                    ? {
+                          id: funcion.sala.id,
+                          nroSala: funcion.sala.nroSala,
+                      }
+                    : null,
+
+                formato: funcion.formato
+                    ? {
+                          id: funcion.formato.id,
+                          nombre: funcion.formato.nombre,
+                          precio: funcion.formato.precio,
+                      }
+                    : null,
             }));
         } catch (error) {
             throw new InternalServerErrorException(

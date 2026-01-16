@@ -20,16 +20,45 @@ import {
 export class FuncionController {
     constructor(private readonly funcionService: FuncionService) {}
 
+    // ===== ADMIN PRIMERO =====
+    @Get('admin/all')
+    async getAllFuncionesAdmin(): Promise<FuncionResponseAdmin[]> {
+        return this.funcionService.getFunciones();
+    }
+
+    @Get('admin/:id')
+    async getFuncionAdmin(
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<FuncionResponseAdmin> {
+        return this.funcionService.getFuncById(id);
+    }
+
+    @Post('admin/new')
+    async createFuncionAdmin(
+        @Body() datos: FuncionInputAdmin,
+    ): Promise<FuncionResponseAdmin> {
+        return this.funcionService.createFuncionAdmin(datos);
+    }
+
+    @Put('admin/:id')
+    async updateFuncionAdmin(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() datos: Partial<FuncionInputAdmin>,
+    ): Promise<FuncionResponseAdmin> {
+        return this.funcionService.updateFuncionAdmin(id, datos);
+    }
+
+    @Delete('admin/:id')
+    async deleteFuncion(
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<{ message: string }> {
+        return this.funcionService.deleteFuncionById(id);
+    }
+
+    // ===== RUTAS GENERALES DESPUÉS =====
     @Post()
     async createFuncion(@Body() datos: FuncionInput): Promise<FuncionResponse> {
         return this.funcionService.newFuncion(datos);
-    }
-
-    @Get(':id')
-    async getFuncion(
-        @Param('id', ParseIntPipe) id: number,
-    ): Promise<FuncionResponse> {
-        return this.funcionService.findOne(id);
     }
 
     @Get('funciones-por-pelicula/:peliculaId')
@@ -37,6 +66,13 @@ export class FuncionController {
         @Param('peliculaId', ParseIntPipe) peliculaId: number,
     ): Promise<FuncionResponseAdmin[]> {
         return this.funcionService.getFuncionesByPeliculaId(peliculaId);
+    }
+
+    @Get(':id')
+    async getFuncion(
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<FuncionResponse> {
+        return this.funcionService.findOne(id);
     }
 
     @Put(':id')
@@ -52,34 +88,5 @@ export class FuncionController {
         @Param('id', ParseIntPipe) id: number,
     ): Promise<ButacasDetalleResponse> {
         return this.funcionService.getButacasDetails(id);
-    }
-    @Get('admin/all')
-    async getAllFuncionesAdmin(): Promise<FuncionResponseAdmin[]> {
-        return this.funcionService.getFunciones();
-    }
-    @Get('admin/:id')
-    async getFuncionAdmin(
-        @Param('id', ParseIntPipe) id: number,
-    ): Promise<FuncionResponseAdmin> {
-        return this.funcionService.getFuncById(id);
-    }
-    @Post('admin/new')
-    async createFuncionAdmin(
-        @Body() datos: FuncionInputAdmin,
-    ): Promise<FuncionResponseAdmin> {
-        return this.funcionService.createFuncionAdmin(datos);
-    }
-    @Delete('admin/:id')
-    async deleteFuncion(
-        @Param('id', ParseIntPipe) id: number,
-    ): Promise<{ message: string }> {
-        return this.funcionService.deleteFuncionById(id);
-    }
-    @Put('admin/:id')
-    async updateFuncionAdmin(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() datos: Partial<FuncionInputAdmin>,
-    ): Promise<FuncionResponseAdmin> {
-        return this.funcionService.updateFuncionAdmin(id, datos);
     }
 }
