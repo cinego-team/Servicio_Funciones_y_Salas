@@ -8,10 +8,11 @@ import { FuncionController } from './funcion.controller';
 import { FuncionService } from './funcion.service';
 import { Funcion } from '../entities/funcion.entity';
 import { IdiomaModule } from 'src/idioma/idioma.module';
+import { DisponibilidadButaca } from '../entities/disponibilidadButaca.entity';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Funcion]),
+        TypeOrmModule.forFeature([Funcion, DisponibilidadButaca]),
         forwardRef(() => DisponibilidadButacaModule),
         forwardRef(() => SalaModule),
         FormatoModule,

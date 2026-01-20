@@ -25,6 +25,18 @@ export class SalaController {
         return this.salaService.findAll();
     }
 
+    // Rutas específicas PRIMERO
+    @Get('admin/selec')
+    async findAllSelect(): Promise<SalaResponseForSelec[]> {
+        return this.salaService.getSalasForSelec();
+    }
+
+    @Get('admin/all')
+    async findAllAdmin(): Promise<SalaResponse[]> {
+        return this.salaService.getAllSalas();
+    }
+
+    // Rutas con parámetros DESPUÉS
     @Get('admin/:id')
     async findOne(
         @Param('id', ParseIntPipe) id: number,
@@ -43,13 +55,5 @@ export class SalaController {
     @Delete('admin/:id')
     async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
         return this.salaService.remove(id);
-    }
-    @Get('admin/selec')
-    async findAllSelect(): Promise<SalaResponseForSelec[]> {
-        return this.salaService.getSalasForSelec();
-    }
-    @Get('admin/all')
-    async findAllAdmin(): Promise<SalaResponse[]> {
-        return this.salaService.getAllSalas();
     }
 }

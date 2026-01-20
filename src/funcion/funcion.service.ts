@@ -23,9 +23,11 @@ import {
     FuncionResponse,
     FuncionResponseAdmin,
 } from './dto';
-import { axiosAPIPeliculas } from 'src/axios_service/axios.client';
+import { axiosAPIPeliculas } from '../axios_service/axios.client';
 import { config } from '../axios_service/env';
 import { IdiomaService } from '../idioma/idioma.service';
+import { DisponibilidadButaca } from '../entities/disponibilidadButaca.entity';
+
 
 @Injectable()
 export class FuncionService {
@@ -39,6 +41,8 @@ export class FuncionService {
         private readonly idiomaService: IdiomaService,
         @Inject(forwardRef(() => DisponibilidadButacaService))
         private readonly disponibilidadButacaService: DisponibilidadButacaService,
+        @InjectRepository(DisponibilidadButaca)  
+        private disponibilidadButacaRepo: Repository<DisponibilidadButaca>,
     ) {}
 
     async newFuncion(datos: FuncionInput): Promise<FuncionResponse> {
@@ -270,22 +274,24 @@ export class FuncionService {
     }
 
     async deleteFuncionById(id: number): Promise<{ message: string }> {
-        try {
-            const constFuncion = await this.funcionRepo.findOne({
-                where: { id },
-            });
-            if (!constFuncion)
-                throw new NotFoundException('Funcion not found.');
-
-            await this.funcionRepo.remove(constFuncion);
-
-            return { message: 'Deleted' };
-        } catch (error) {
-            throw new InternalServerErrorException(
-                'Error deleting Funcion',
-                error,
-            );
+        const funcion = await this.funcionRepo.findOne({ 
+            where: { id },
+            relations: ['disponibilidadButaca'],  // Cargar las butacas asociadas
+        });
+        
+        if (!funcion) {
+            throw new NotFoundException(`Función con ID ${id} no encontrada`);
         }
+        
+        // Primero eliminar las disponibilidades de butaca asociadas
+        if (funcion.disponibilidadButaca && funcion.disponibilidadButaca.length > 0) {
+            await this.disponibilidadButacaRepo.remove(funcion.disponibilidadButaca);
+        }
+        
+        // Luego eliminar la función
+        await this.funcionRepo.remove(funcion);
+        
+        return { message: `Función ${id} eliminada correctamente` };
     }
 
     async getButacasDetails(id: number): Promise<ButacasDetalleResponse> {
@@ -391,7 +397,7 @@ export class FuncionService {
     }> {
         const funcion = await this.funcionRepo.findOne({
             where: { id },
-            relations: ['sala', 'idioma', 'formato', 'pelicula'],
+            relations: ['sala', 'idioma', 'formato'],
         });
 
         if (!funcion) throw new NotFoundException('Función no encontrada');

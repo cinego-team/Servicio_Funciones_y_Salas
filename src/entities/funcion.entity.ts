@@ -35,9 +35,6 @@ export class Funcion {
     @ManyToOne(() => Idioma, (idioma) => idioma.funciones)
     idioma: Idioma;
 
-    @OneToMany(
-        () => DisponibilidadButaca,
-        (disponibilidadButaca) => disponibilidadButaca.funcion,
-    )
+    @OneToMany(() => DisponibilidadButaca,(disponibilidadButaca) => disponibilidadButaca.funcion,)
     disponibilidadButaca: DisponibilidadButaca[];
 }
