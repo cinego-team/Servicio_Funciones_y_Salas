@@ -7,6 +7,7 @@ import {
     Param,
     Body,
     ParseIntPipe,
+    Headers
 } from '@nestjs/common';
 import { FuncionService } from './funcion.service';
 import { ButacasDetalleResponse, FuncionInput } from './dto';
@@ -34,10 +35,8 @@ export class FuncionController {
     }
 
     @Post('admin/new')
-    async createFuncionAdmin(
-        @Body() datos: FuncionInputAdmin,
-    ): Promise<FuncionResponseAdmin> {
-        return this.funcionService.createFuncionAdmin(datos);
+    createFuncionAdmin(@Body() dto: FuncionInputAdmin, @Headers('authorization') token: string) {
+        return this.funcionService.createFuncionAdmin(dto, token);
     }
 
     @Put('admin/:id')

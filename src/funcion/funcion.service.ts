@@ -27,7 +27,7 @@ import { axiosAPIPeliculas } from '../axios_service/axios.client';
 import { config } from '../axios_service/env';
 import { IdiomaService } from '../idioma/idioma.service';
 import { DisponibilidadButaca } from '../entities/disponibilidadButaca.entity';
-
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class FuncionService {
@@ -422,49 +422,62 @@ export class FuncionService {
             },
         };
     }
-    async createFuncionAdmin(
-        dto: FuncionInputAdmin,
-    ): Promise<FuncionResponseAdmin> {
-        const peliculaResp = await axiosAPIPeliculas
-            .get(config.APIPeliculasUrls.getPeliculaById(dto.peliculaId))
-            .catch(() => null);
+    async createFuncionAdmin(dto: FuncionInputAdmin, token: string): Promise<FuncionResponseAdmin> {
+    
+    // Extraer usuario_id del token
+    const tokenSinBearer = token.replace('Bearer ', '');
+    const decoded = jwt.decode(tokenSinBearer) as { sub: string };
+    const usuarioId = parseInt(decoded.sub);
 
-        if (!peliculaResp) {
-            throw new NotFoundException('La película no existe (API Gateway)');
-        }
-
-        const sala = await this.salaService.getSalaById(dto.sala.id);
-        const idioma = await this.idiomaService.getIdiomaById(dto.idioma.id);
-        const formato = await this.formatoService.findOne(dto.formato.id);
-        const funcion = this.funcionRepo.create({
-            peliculaId: dto.peliculaId,
-            fecha: dto.fecha,
-            estaDisponible: dto.estaDisponible,
-            sala,
-            idioma,
-            formato,
+    const peliculaResp = await axiosAPIPeliculas
+        .get(config.APIPeliculasUrls.getPeliculaById(dto.peliculaId), {
+            headers: { Authorization: token }
+        })
+        .catch((error) => {
+            return null;
         });
-        const saved = await this.funcionRepo.save(funcion);
-        return {
-            id: saved.id,
-            peliculaId: saved.peliculaId,
-            fecha: saved.fecha,
-            estaDisponible: saved.estaDisponible,
-            sala: {
-                id: sala.id,
-                nroSala: sala.nroSala,
-            },
-            idioma: {
-                id: idioma.id,
-                nombre: idioma.nombre,
-            },
-            formato: {
-                id: formato.id,
-                nombre: formato.nombre,
-                precio: formato.precio,
-            },
-        };
+
+    if (!peliculaResp) {
+        throw new NotFoundException('La película no existe (API Gateway)');
     }
+
+    const sala = await this.salaService.getSalaById(dto.sala.id);
+    const idioma = await this.idiomaService.getIdiomaById(dto.idioma.id);
+    const formato = await this.formatoService.findOne(dto.formato.id);
+    
+    const funcion = this.funcionRepo.create({
+        peliculaId: dto.peliculaId,
+        fecha: dto.fecha,
+        estaDisponible: dto.estaDisponible,
+        sala,
+        idioma,
+        formato,
+        usuarioId: usuarioId, // <-- Agregado: asigna el usuario que crea la funcion
+    });
+    
+    const saved = await this.funcionRepo.save(funcion);
+    
+    return {
+        id: saved.id,
+        peliculaId: saved.peliculaId,
+        fecha: saved.fecha,
+        estaDisponible: saved.estaDisponible,
+        sala: {
+            id: sala.id,
+            nroSala: sala.nroSala,
+        },
+        idioma: {
+            id: idioma.id,
+            nombre: idioma.nombre,
+        },
+        formato: {
+            id: formato.id,
+            nombre: formato.nombre,
+            precio: formato.precio,
+        },
+    };
+}
+
     async updateFuncionAdmin(
         id: number,
         dto: Partial<FuncionInputAdmin>,
