@@ -69,4 +69,13 @@ export class FormatoController {
             precio: formatoEntity.precio,
         };
     }
+    @Get('precio-entrada/:id')
+        async getPrecioEntrada(
+            @Param('id', ParseIntPipe) id: number,
+        ): Promise<{ precio: number }> {
+            const formato = await this.formatoService.findOne(id);
+            return {
+                precio: formato.precio,
+            };
+    }
 }
