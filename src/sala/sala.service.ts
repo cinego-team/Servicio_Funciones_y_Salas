@@ -11,6 +11,7 @@ import { FilaService } from 'src/fila/fila.service';
 import { Sala } from '../entities/sala.entity';
 import { Fila } from 'src/entities/fila.entity';
 import { SalaInput, SalaResponse, SalaResponseForSelec } from './dto';
+import { HttpException } from '@nestjs/common/exceptions/http.exception';
 
 @Injectable()
 export class SalaService {
@@ -168,10 +169,17 @@ export class SalaService {
     async remove(id: number): Promise<void> {
         try {
             const result = await this.salaRepository.delete(id);
+
             if (result.affected === 0) {
                 throw new NotFoundException(`Sala con id ${id} no encontrada`);
             }
         } catch (error) {
+            console.error('ERROR REAL DELETE SALA:', error);
+
+            if (error instanceof HttpException) {
+                throw error;
+            }
+
             throw new InternalServerErrorException('Error al eliminar la sala');
         }
     }
@@ -239,21 +247,20 @@ export class SalaService {
     }
     async getAllSalas(): Promise<SalaResponse[]> {
         try {
-            // Cargamos todo lo necesario: filas y butacas
             const salas = await this.salaRepository.find({
                 relations: ['filas', 'filas.butacas'],
             });
 
             return salas.map((sala) => {
-                const cantFilas = sala.filas.length;
+                const filas = sala.filas ?? [];
 
-                // Si la sala tiene filas, la cantidad de butacas por fila se toma de la primera
+                const cantFilas = filas.length;
+
                 const cantButacasPorFila =
-                    cantFilas > 0 ? sala.filas[0].butacas.length : 0;
+                    cantFilas > 0 ? (filas[0].butacas?.length ?? 0) : 0;
 
-                // La capacidad total es la suma de todas las butacas
-                const capacidad = sala.filas.reduce(
-                    (total, fila) => total + fila.butacas.length,
+                const capacidad = filas.reduce(
+                    (total, fila) => total + (fila.butacas?.length ?? 0),
                     0,
                 );
 
@@ -261,12 +268,14 @@ export class SalaService {
                     id: sala.id,
                     nroSala: sala.nroSala,
                     estaDisponible: sala.estaDisponible,
-                    cantFilas: cantFilas,
-                    cantButacasPorFila: cantButacasPorFila,
-                    capacidad: capacidad,
+                    cantFilas,
+                    cantButacasPorFila,
+                    capacidad,
                 };
             });
         } catch (error) {
+            console.error('ERROR REAL AL OBTENER SALAS:', error);
+
             throw new InternalServerErrorException(
                 'Error al obtener las salas',
             );

@@ -20,9 +20,15 @@ export class SalaController {
         return this.salaService.create(data);
     }
 
-    @Get()
-    async findAll(): Promise<SalaResponse[]> {
-        return this.salaService.findAll();
+    // ✅ FIJAS PRIMERO
+    @Get('admin/all')
+    async findAllAdmin(): Promise<SalaResponse[]> {
+        return this.salaService.getAllSalas();
+    }
+
+    @Get('admin/selec')
+    async findAllSelect(): Promise<SalaResponseForSelec[]> {
+        return this.salaService.getSalasForSelec();
     }
 
     // Rutas específicas PRIMERO
