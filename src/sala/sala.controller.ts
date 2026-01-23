@@ -19,6 +19,14 @@ export class SalaController {
     async create(@Body() data: SalaInput): Promise<SalaResponse> {
         return this.salaService.create(data);
     }
+    @Get('admin/selec')
+    async getSalasForSelec() {
+        return this.salaService.getSalasForSelec();
+    }
+    @Get('admin/all')
+    async getAllSalas() {
+        return this.salaService.getAllSalas();
+    }
 
     // Rutas con parámetros DESPUÉS
     @Get('admin/:id')
