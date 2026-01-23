@@ -11,7 +11,7 @@ import { FilaService } from 'src/fila/fila.service';
 import { Sala } from '../entities/sala.entity';
 import { Fila } from 'src/entities/fila.entity';
 import { SalaInput, SalaResponse, SalaResponseForSelec } from './dto';
-import { HttpException } from '@nestjs/common/exceptions/http.exception';
+import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
 
 @Injectable()
 export class SalaService {
@@ -107,81 +107,84 @@ export class SalaService {
     }
 
     async update(id: number, data: Partial<SalaInput>): Promise<SalaResponse> {
-        try {
-            const sala = await this.salaRepository.findOne({ where: { id } });
-            if (!sala) {
-                throw new NotFoundException(`Sala con id ${id} no encontrada`);
-            }
+        const sala = await this.salaRepository.findOne({
+            where: { id },
+            relations: ['filas', 'filas.butacas'],
+        });
 
-            if (data.estaDisponible) {
-                sala.estaDisponible = data.estaDisponible;
-            }
+        if (!sala) {
+            throw new NotFoundException(`Sala con id ${id} no encontrada`);
+        }
 
-            if (data.nroSala) {
-                sala.nroSala = data.nroSala ?? sala.nroSala;
-            }
+        if (data.estaDisponible !== undefined) {
+            sala.estaDisponible = data.estaDisponible;
+        }
 
-            if (data.cantFilas && !data.cantButacasPorFila) {
-                throw new InternalServerErrorException(
-                    'Debe proporcionar cantButacasPorFila al actualizar cantFilas',
-                );
-            }
+        if (data.nroSala !== undefined) {
+            sala.nroSala = data.nroSala;
+        }
 
-            if (!data.cantFilas && data.cantButacasPorFila) {
-                const filasACrear: Fila[] =
-                    await this.filaService.createMultiple(
-                        sala.filas.length,
-                        data.cantButacasPorFila,
-                    );
-                await this.filaService.saveArray(filasACrear);
-            }
-
-            if (data.cantFilas && data.cantButacasPorFila) {
-                const filasACrear: Fila[] =
-                    await this.filaService.createMultiple(
-                        data.cantFilas,
-                        data.cantButacasPorFila,
-                    );
-                await this.filaService.saveArray(filasACrear);
-
-                sala.filas = filasACrear;
-            }
-
-            await this.salaRepository.save(sala);
-
-            const response: SalaResponse = {
-                id: sala.id,
-                estaDisponible: sala.estaDisponible,
-                nroSala: sala.nroSala,
-                cantFilas: sala.filas.length,
-                cantButacasPorFila:
-                    sala.filas.length > 0 ? sala.filas[0].butacas.length : 0,
-            };
-
-            return response;
-        } catch (error) {
-            throw new InternalServerErrorException(
-                'Error al actualizar la sala',
+        if (
+            data.cantFilas !== undefined &&
+            data.cantButacasPorFila === undefined
+        ) {
+            throw new BadRequestException(
+                'Debe proporcionar cantButacasPorFila al actualizar cantFilas',
             );
         }
+
+        if (
+            data.cantFilas === undefined &&
+            data.cantButacasPorFila !== undefined
+        ) {
+            const filasACrear = await this.filaService.createMultiple(
+                sala.filas.length,
+                data.cantButacasPorFila,
+            );
+            await this.filaService.saveArray(filasACrear);
+        }
+
+        if (
+            data.cantFilas !== undefined &&
+            data.cantButacasPorFila !== undefined
+        ) {
+            const filasACrear = await this.filaService.createMultiple(
+                data.cantFilas,
+                data.cantButacasPorFila,
+            );
+            await this.filaService.saveArray(filasACrear);
+            sala.filas = filasACrear;
+        }
+
+        await this.salaRepository.save(sala);
+
+        return {
+            id: sala.id,
+            estaDisponible: sala.estaDisponible,
+            nroSala: sala.nroSala,
+            cantFilas: sala.filas.length,
+            cantButacasPorFila:
+                sala.filas.length > 0 ? sala.filas[0].butacas.length : 0,
+        };
     }
 
     async remove(id: number): Promise<void> {
-        try {
-            const result = await this.salaRepository.delete(id);
+        const sala = await this.salaRepository.findOne({
+            where: { id },
+            relations: ['filas', 'funciones'],
+        });
 
-            if (result.affected === 0) {
-                throw new NotFoundException(`Sala con id ${id} no encontrada`);
-            }
-        } catch (error) {
-            console.error('ERROR REAL DELETE SALA:', error);
-
-            if (error instanceof HttpException) {
-                throw error;
-            }
-
-            throw new InternalServerErrorException('Error al eliminar la sala');
+        if (!sala) {
+            throw new NotFoundException(`Sala con id ${id} no encontrada`);
         }
+
+        if (sala.filas.length > 0 || sala.funciones.length > 0) {
+            throw new BadRequestException(
+                'No se puede eliminar la sala porque tiene datos asociados',
+            );
+        }
+
+        await this.salaRepository.remove(sala);
     }
 
     async getSalaById(id: number): Promise<Sala> {
