@@ -171,16 +171,17 @@ export class SalaService {
     async remove(id: number): Promise<void> {
         const sala = await this.salaRepository.findOne({
             where: { id },
-            relations: ['filas', 'funciones'],
+            relations: ['funciones'],
         });
 
         if (!sala) {
             throw new NotFoundException(`Sala con id ${id} no encontrada`);
         }
 
-        if (sala.filas.length > 0 || sala.funciones.length > 0) {
+        // Solo verificar funciones - las filas y butacas se eliminan en cascada
+        if (sala.funciones && sala.funciones.length > 0) {
             throw new BadRequestException(
-                'No se puede eliminar la sala porque tiene datos asociados',
+                'No se puede eliminar la sala porque tiene funciones asociadas',
             );
         }
 

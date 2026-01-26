@@ -16,6 +16,6 @@ export class Sala {
     @OneToMany(() => Funcion, (funcion) => funcion.sala)
     funciones: Funcion[];
 
-    @OneToMany(() => Fila, (fila) => fila.sala)
+    @OneToMany(() => Fila, (fila) => fila.sala, { cascade: true })  
     filas: Fila[];
 }

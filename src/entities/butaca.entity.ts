@@ -13,7 +13,7 @@ export class Butaca {
     @OneToMany(() => DisponibilidadButaca, (disponibilidadButaca) => disponibilidadButaca.butaca)
     disponibilidadButaca: DisponibilidadButaca;
 
-    @ManyToOne(() => Fila, (fila) => fila.butacas)
+    @ManyToOne(() => Fila, (fila) => fila.butacas, { onDelete: 'CASCADE' })  
     @JoinColumn({ name: 'fila_id' })
     fila: Fila;
 }

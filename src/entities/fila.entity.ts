@@ -10,10 +10,10 @@ export class Fila {
     @Column({ name: 'letra_fila', type: 'char', length: 1 })
     letraFila: string;
 
-    @OneToMany(() => Butaca, (butaca) => butaca.fila)
+    @OneToMany(() => Butaca, (butaca) => butaca.fila, { cascade: true })  
     butacas: Butaca[];
 
-    @ManyToOne(() => Sala, (sala) => sala.filas)
+    @ManyToOne(() => Sala, (sala) => sala.filas, { onDelete: 'CASCADE' })  
     @JoinColumn({ name: 'sala_id' })
     sala: Sala;
 }
