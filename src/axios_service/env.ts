@@ -1,15 +1,16 @@
 export const config = {
-    // 1. Si estas peticiones pasan por el Gateway, usa el 3000. 
+    // 1. Si estas peticiones pasan por el Gateway, usa el 3000.
     // Pero para comunicación interna entre microservicios, lo ideal es ir al puerto directo.
     APIPeliculasUrls: {
-        baseUrl: 'http://localhost:3001', 
-        getPeliculaById: (id: number) => `microservicio-peliculas/pelicula/${id}`,
+        baseUrl: 'http://localhost:3001',
+        getPeliculaById: (id: number) => `/pelicula/admin/${id}`,
     },
 
     // 2. Usuarios (Asegúrate de qué puerto usa el micro de usuarios, suele ser 3001 o 3002)
     APIUsuariosUrls: {
-        baseUrl: 'http://localhost:3004', 
-        getDatosEmpleadoById: (id: number) => `microservicio-usuarios/datos-empleado/${id}`
+        baseUrl: 'http://localhost:3004',
+        getDatosEmpleadoById: (id: number) =>
+            `/microservicio-usuarios/datos-empleado/${id}`,
     },
 
     // 3. FUNCIONES (El que fallaba, ahora apuntando al 3003)
@@ -30,5 +31,5 @@ export const config = {
     // 6. MAILS
     APIEnviarMailsUrls: {
         baseUrl: 'http://localhost:3008',
-    }
-}
+    },
+};

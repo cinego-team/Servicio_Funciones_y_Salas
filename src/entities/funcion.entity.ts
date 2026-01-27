@@ -20,6 +20,8 @@ export class Funcion {
 
     @Column({ type: 'date' })
     fecha: Date;
+    @Column({ type: 'time',default: '00:00' })
+    hora: string;
 
     @Column({ name: 'pelicula_id' })
     peliculaId: number;
@@ -35,6 +37,9 @@ export class Funcion {
     @ManyToOne(() => Idioma, (idioma) => idioma.funciones)
     idioma: Idioma;
 
-    @OneToMany(() => DisponibilidadButaca,(disponibilidadButaca) => disponibilidadButaca.funcion,)
+    @OneToMany(
+        () => DisponibilidadButaca,
+        (disponibilidadButaca) => disponibilidadButaca.funcion,
+    )
     disponibilidadButaca: DisponibilidadButaca[];
 }

@@ -27,6 +27,7 @@ export class ButacasDetalleResponse {
 export class FuncionInputAdmin {
     peliculaId: number;
     fecha: Date;
+    hora: string;
     estaDisponible: boolean;
     idioma: {
         id: number;
@@ -41,11 +42,13 @@ export class FuncionInputAdmin {
         nombre: string;
         precio: number;
     };
+    usuarioId: number;
 }
 export class FuncionResponseAdmin {
     id: number;
     peliculaId: number;
     fecha: Date;
+    hora: string;
     estaDisponible: boolean;
     idioma: {
         id: number;
@@ -60,4 +63,5 @@ export class FuncionResponseAdmin {
         nombre: string;
         precio: number;
     } | null;
+    usuarioId: number;
 }

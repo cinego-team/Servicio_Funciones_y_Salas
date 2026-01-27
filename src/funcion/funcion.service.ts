@@ -41,10 +41,10 @@ export class FuncionService {
         private readonly idiomaService: IdiomaService,
         @Inject(forwardRef(() => DisponibilidadButacaService))
         private readonly disponibilidadButacaService: DisponibilidadButacaService,
-        @InjectRepository(DisponibilidadButaca)  
+        @InjectRepository(DisponibilidadButaca)
         private disponibilidadButacaRepo: Repository<DisponibilidadButaca>,
     ) {}
-
+    /**
     async newFuncion(datos: FuncionInput): Promise<FuncionResponse> {
         try {
             const constFormato: Formato | null =
@@ -142,6 +142,7 @@ export class FuncionService {
                     relations: {
                         sala: true,
                         formato: true,
+                        idioma: true,
                     },
                 },
             );
@@ -153,9 +154,11 @@ export class FuncionService {
                 id: constFuncion.id,
                 estaDisponible: constFuncion.estaDisponible,
                 fecha: constFuncion.fecha,
+                hora: constFuncion.hora,
                 peliculaId: constFuncion.peliculaId,
                 sala: constFuncion.sala,
                 formato: constFuncion.formato,
+                idioma: constFuncion.idioma,
                 usuarioId: constFuncion.usuarioId,
             };
             return response;
@@ -166,6 +169,7 @@ export class FuncionService {
             );
         }
     }
+        
 
     async updateFuncion(
         id: number,
@@ -237,6 +241,7 @@ export class FuncionService {
             );
         }
     }
+        */
 
     async getFuncionesByPeliculaId(
         peliculaId: number,
@@ -264,6 +269,7 @@ export class FuncionService {
             id: funcion.id,
             estaDisponible: funcion.estaDisponible,
             fecha: funcion.fecha,
+            hora: funcion.hora,
             peliculaId: funcion.peliculaId,
             idioma: funcion.idioma,
             sala: funcion.sala,
@@ -274,23 +280,28 @@ export class FuncionService {
     }
 
     async deleteFuncionById(id: number): Promise<{ message: string }> {
-        const funcion = await this.funcionRepo.findOne({ 
+        const funcion = await this.funcionRepo.findOne({
             where: { id },
-            relations: ['disponibilidadButaca'],  // Cargar las butacas asociadas
+            relations: ['disponibilidadButaca'], // Cargar las butacas asociadas
         });
-        
+
         if (!funcion) {
             throw new NotFoundException(`Función con ID ${id} no encontrada`);
         }
-        
+
         // Primero eliminar las disponibilidades de butaca asociadas
-        if (funcion.disponibilidadButaca && funcion.disponibilidadButaca.length > 0) {
-            await this.disponibilidadButacaRepo.remove(funcion.disponibilidadButaca);
+        if (
+            funcion.disponibilidadButaca &&
+            funcion.disponibilidadButaca.length > 0
+        ) {
+            await this.disponibilidadButacaRepo.remove(
+                funcion.disponibilidadButaca,
+            );
         }
-        
+
         // Luego eliminar la función
         await this.funcionRepo.remove(funcion);
-        
+
         return { message: `Función ${id} eliminada correctamente` };
     }
 
@@ -346,6 +357,7 @@ export class FuncionService {
                 id: funcion.id,
                 peliculaId: funcion.peliculaId,
                 fecha: funcion.fecha,
+                hora: funcion.hora,
                 estaDisponible: funcion.estaDisponible,
 
                 idioma: funcion.idioma
@@ -369,6 +381,7 @@ export class FuncionService {
                           precio: funcion.formato.precio,
                       }
                     : null,
+                usuarioId: funcion.usuarioId,
             }));
         } catch (error) {
             throw new InternalServerErrorException(
@@ -380,6 +393,7 @@ export class FuncionService {
         id: number;
         peliculaId: number;
         fecha: Date;
+        hora: string;
         estaDisponible: boolean;
         sala: {
             id: number;
@@ -394,6 +408,7 @@ export class FuncionService {
             nombre: string;
             precio: number;
         };
+        usuarioId: number;
     }> {
         const funcion = await this.funcionRepo.findOne({
             where: { id },
@@ -406,6 +421,7 @@ export class FuncionService {
             id: funcion.id,
             peliculaId: funcion.peliculaId,
             fecha: funcion.fecha,
+            hora: funcion.hora,
             estaDisponible: funcion.estaDisponible,
             sala: {
                 id: funcion.sala.id,
@@ -420,64 +436,62 @@ export class FuncionService {
                 nombre: funcion.formato.nombre,
                 precio: funcion.formato.precio,
             },
+            usuarioId: funcion.usuarioId,
         };
     }
-    async createFuncionAdmin(dto: FuncionInputAdmin, token: string): Promise<FuncionResponseAdmin> {
-    
-    // Extraer usuario_id del token
-    const tokenSinBearer = token.replace('Bearer ', '');
-    const decoded = jwt.decode(tokenSinBearer) as { sub: string };
-    const usuarioId = parseInt(decoded.sub);
+    async createFuncionAdmin(
+        dto: FuncionInputAdmin,
+        userId: number,
+    ): Promise<FuncionResponseAdmin> {
+        const peliculaResp = await axiosAPIPeliculas.get(
+            config.APIPeliculasUrls.getPeliculaById(dto.peliculaId),
+        );
 
-    const peliculaResp = await axiosAPIPeliculas
-        .get(config.APIPeliculasUrls.getPeliculaById(dto.peliculaId), {
-            headers: { Authorization: token }
-        })
-        .catch((error) => {
-            return null;
+        if (!peliculaResp) {
+            throw new NotFoundException(
+                'La película no existe (API Gateway) error giane',
+            );
+        }
+
+        const sala = await this.salaService.getSalaById(dto.sala.id);
+        const idioma = await this.idiomaService.getIdiomaById(dto.idioma.id);
+        const formato = await this.formatoService.findOne(dto.formato.id);
+
+        const funcion = this.funcionRepo.create({
+            peliculaId: dto.peliculaId,
+            fecha: dto.fecha,
+            hora: dto.hora,
+            estaDisponible: dto.estaDisponible,
+            sala,
+            idioma,
+            formato,
+            usuarioId: userId,
         });
 
-    if (!peliculaResp) {
-        throw new NotFoundException('La película no existe (API Gateway)');
+        const saved = await this.funcionRepo.save(funcion);
+
+        return {
+            id: saved.id,
+            peliculaId: saved.peliculaId,
+            fecha: saved.fecha,
+            hora: saved.hora,
+            estaDisponible: saved.estaDisponible,
+            sala: {
+                id: sala.id,
+                nroSala: sala.nroSala,
+            },
+            idioma: {
+                id: idioma.id,
+                nombre: idioma.nombre,
+            },
+            formato: {
+                id: formato.id,
+                nombre: formato.nombre,
+                precio: formato.precio,
+            },
+            usuarioId: userId,
+        };
     }
-
-    const sala = await this.salaService.getSalaById(dto.sala.id);
-    const idioma = await this.idiomaService.getIdiomaById(dto.idioma.id);
-    const formato = await this.formatoService.findOne(dto.formato.id);
-    
-    const funcion = this.funcionRepo.create({
-        peliculaId: dto.peliculaId,
-        fecha: dto.fecha,
-        estaDisponible: dto.estaDisponible,
-        sala,
-        idioma,
-        formato,
-        usuarioId: usuarioId, // <-- Agregado: asigna el usuario que crea la funcion
-    });
-    
-    const saved = await this.funcionRepo.save(funcion);
-    
-    return {
-        id: saved.id,
-        peliculaId: saved.peliculaId,
-        fecha: saved.fecha,
-        estaDisponible: saved.estaDisponible,
-        sala: {
-            id: sala.id,
-            nroSala: sala.nroSala,
-        },
-        idioma: {
-            id: idioma.id,
-            nombre: idioma.nombre,
-        },
-        formato: {
-            id: formato.id,
-            nombre: formato.nombre,
-            precio: formato.precio,
-        },
-    };
-}
-
     async updateFuncionAdmin(
         id: number,
         dto: Partial<FuncionInputAdmin>,
@@ -491,6 +505,7 @@ export class FuncionService {
             throw new NotFoundException('La función no existe');
         }
 
+        // Actualizamos película si viene
         if (dto.peliculaId) {
             const peliculaResp = await axiosAPIPeliculas
                 .get(config.APIPeliculasUrls.getPeliculaById(dto.peliculaId))
@@ -505,27 +520,26 @@ export class FuncionService {
             funcion.peliculaId = dto.peliculaId;
         }
 
+        // Actualizamos relaciones
         if (dto.sala?.id) {
-            const sala = await this.salaService.getSalaById(dto.sala.id);
-            funcion.sala = sala;
+            funcion.sala = await this.salaService.getSalaById(dto.sala.id);
         }
 
         if (dto.idioma?.id) {
-            const idiomaEntity = await this.idiomaService.getIdiomaByIdForPut(
+            funcion.idioma = await this.idiomaService.getIdiomaByIdForPut(
                 dto.idioma.id,
             );
-            funcion.idioma = idiomaEntity;
         }
 
         if (dto.formato?.id) {
-            const formatoEntity =
-                await this.formatoService.findOneFormatoForPut(dto.formato.id);
-            funcion.formato = formatoEntity;
-        }
-        if (dto.fecha !== undefined) {
-            funcion.fecha = dto.fecha;
+            funcion.formato = await this.formatoService.findOneFormatoForPut(
+                dto.formato.id,
+            );
         }
 
+        // Campos simples
+        if (dto.fecha !== undefined) funcion.fecha = dto.fecha;
+        if (dto.hora !== undefined) funcion.hora = dto.hora;
         if (dto.estaDisponible !== undefined) {
             funcion.estaDisponible =
                 typeof dto.estaDisponible === 'string'
@@ -533,7 +547,30 @@ export class FuncionService {
                     : dto.estaDisponible;
         }
 
-        await this.funcionRepo.save(funcion);
-        return funcion;
+        // Guardamos
+        const saved = await this.funcionRepo.save(funcion);
+
+        // Devolvemos en formato FuncionResponseAdmin
+        return {
+            id: saved.id,
+            peliculaId: saved.peliculaId,
+            fecha: saved.fecha,
+            hora: saved.hora,
+            estaDisponible: saved.estaDisponible,
+            sala: saved.sala
+                ? { id: saved.sala.id, nroSala: saved.sala.nroSala }
+                : null,
+            idioma: saved.idioma
+                ? { id: saved.idioma.id, nombre: saved.idioma.nombre }
+                : null,
+            formato: saved.formato
+                ? {
+                      id: saved.formato.id,
+                      nombre: saved.formato.nombre,
+                      precio: saved.formato.precio,
+                  }
+                : null,
+            usuarioId: saved.usuarioId,
+        };
     }
 }

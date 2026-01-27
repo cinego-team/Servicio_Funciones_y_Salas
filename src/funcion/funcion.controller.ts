@@ -7,7 +7,7 @@ import {
     Param,
     Body,
     ParseIntPipe,
-    Headers
+    Headers,
 } from '@nestjs/common';
 import { FuncionService } from './funcion.service';
 import { ButacasDetalleResponse, FuncionInput } from './dto';
@@ -16,7 +16,7 @@ import {
     FuncionResponseAdmin,
     FuncionInputAdmin,
 } from './dto';
-
+import { UnauthorizedException, NotFoundException } from '@nestjs/common';
 @Controller('funcion')
 export class FuncionController {
     constructor(private readonly funcionService: FuncionService) {}
@@ -35,16 +35,22 @@ export class FuncionController {
     }
 
     @Post('admin/new')
-    createFuncionAdmin(@Body() dto: FuncionInputAdmin, @Headers('authorization') token: string) {
-        return this.funcionService.createFuncionAdmin(dto, token);
-    }
+    createFuncionAdmin(
+        @Body() dto: FuncionInputAdmin,
+        @Headers('x-user-id') userId: string,
+    ) {
+        if (!userId) {
+            throw new UnauthorizedException('Usuario no autenticado');
+        }
 
-    @Put('admin/:id')
-    async updateFuncionAdmin(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() datos: Partial<FuncionInputAdmin>,
-    ): Promise<FuncionResponseAdmin> {
-        return this.funcionService.updateFuncionAdmin(id, datos);
+        return this.funcionService.createFuncionAdmin(dto, Number(userId));
+    }
+    @Put('admin/edit/:id')
+    updateFuncionAdmin(
+        @Param('id') id: string,
+        @Body() dto: Partial<FuncionInputAdmin>,
+    ) {
+        return this.funcionService.updateFuncionAdmin(Number(id), dto);
     }
 
     @Delete('admin/:id')
@@ -55,10 +61,12 @@ export class FuncionController {
     }
 
     // ===== RUTAS GENERALES DESPUÉS =====
+    /**
     @Post()
     async createFuncion(@Body() datos: FuncionInput): Promise<FuncionResponse> {
         return this.funcionService.newFuncion(datos);
     }
+         */
 
     @Get('funciones-por-pelicula/:peliculaId')
     async getFuncionesByPeliculaId(
@@ -66,14 +74,14 @@ export class FuncionController {
     ): Promise<FuncionResponseAdmin[]> {
         return this.funcionService.getFuncionesByPeliculaId(peliculaId);
     }
-
+    /** 
     @Get(':id')
     async getFuncion(
         @Param('id', ParseIntPipe) id: number,
     ): Promise<FuncionResponse> {
         return this.funcionService.findOne(id);
     }
-
+   
     @Put(':id')
     async updateFuncion(
         @Param('id', ParseIntPipe) id: number,
@@ -81,7 +89,7 @@ export class FuncionController {
     ): Promise<FuncionResponse> {
         return this.funcionService.updateFuncion(id, datos);
     }
-
+*/
     @Get(':id/butacas-detalle')
     async getButacasDetails(
         @Param('id', ParseIntPipe) id: number,
