@@ -461,7 +461,7 @@ export class FuncionService {
             peliculaId: dto.peliculaId,
             fecha: dto.fecha,
             hora: dto.hora,
-            estaDisponible: dto.estaDisponible,
+            estaDisponible: false,  // Inicialmente false hasta crear las butacas
             sala,
             idioma,
             formato,
@@ -469,6 +469,34 @@ export class FuncionService {
         });
 
         const saved = await this.funcionRepo.save(funcion);
+
+        // ===== AGREGAR ESTO: Crear disponibilidades de butaca =====
+        const butacasAsignadas = await this.salaService.getButacasIdBySalaId(sala.id);
+
+        if (butacasAsignadas && butacasAsignadas.length > 0) {
+            const estadoDisponibilidad = await this.estadoDisponibilidadService.getByEnum(
+                EstadoButacaEnum.DISPONIBLE,
+            );
+
+            if (!estadoDisponibilidad) {
+                throw new NotFoundException('EstadoDisponibilidadButaca DISPONIBLE no encontrado.');
+            }
+
+            const butacasDisponibilidadACrear = butacasAsignadas.map((butacaId) => {
+                return this.disponibilidadButacaService.createDisponibilidadButaca({
+                    funcion: { id: saved.id } as Funcion,
+                    butaca: { id: butacaId } as Butaca,
+                    estadoDisponibilidadButaca: estadoDisponibilidad,
+                });
+            });
+
+            await this.disponibilidadButacaService.saveArray(butacasDisponibilidadACrear);
+        }
+
+        // Actualizar la funcion a disponible
+        saved.estaDisponible = dto.estaDisponible ?? true;
+        await this.funcionRepo.save(saved);
+        // ===== FIN DE LO AGREGADO =====
 
         return {
             id: saved.id,
@@ -492,6 +520,7 @@ export class FuncionService {
             usuarioId: userId,
         };
     }
+    
     async updateFuncionAdmin(
         id: number,
         dto: Partial<FuncionInputAdmin>,
