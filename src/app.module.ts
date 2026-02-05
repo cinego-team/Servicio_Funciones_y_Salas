@@ -22,11 +22,9 @@ import { Idioma } from './entities/idioma.entity';
     imports: [
         TypeOrmModule.forRoot({
             type: 'postgres',
-            host: 'localhost',
-            port: 5432,
-            database: 'msfuncionesysalas',
-            username: 'postgres',
-            password: 'grupou',
+            url: process.env.PG_MSFUNCIONESYSALAS,
+            ssl: { rejectUnauthorized: false },
+            autoLoadEntities: true,
             entities: [
                 Butaca,
                 DisponibilidadButaca,
@@ -37,7 +35,7 @@ import { Idioma } from './entities/idioma.entity';
                 Sala,
                 Idioma,
             ],
-            synchronize: true,
+            synchronize: false,
         }),
         ButacaModule,
         DisponibilidadButacaModule,
@@ -51,4 +49,4 @@ import { Idioma } from './entities/idioma.entity';
     controllers: [AppController],
     providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
