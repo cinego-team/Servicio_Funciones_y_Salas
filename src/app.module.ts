@@ -35,7 +35,7 @@ import { Idioma } from './entities/idioma.entity';
                 Sala,
                 Idioma,
             ],
-            synchronize: false,
+            synchronize: true,
         }),
         ButacaModule,
         DisponibilidadButacaModule,
