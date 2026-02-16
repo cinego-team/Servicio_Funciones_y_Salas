@@ -5,17 +5,17 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     await app.enableCors({
         origin: [
-            'https://apigateway-v5pv.onrender.com',
-            'https://servicio-usuarios-ejqg.onrender.com',
-            'https://microservicio-de-peliculas.onrender.com',
-            'https://serviciopromociones-wftn.onrender.com',
-            'https://servicioventas.onrender.com',
-            'https://servicio-envio-emails.onrender.com',
-            'https://servicio-integracion-mercadopago.onrender.com'
+            `http://localhost:${process.env.PUERTO_MS_PROMOCIONES}`,
+            `http://localhost:${process.env.PUERTO_MS_VENTAS}`,
+            `http://localhost:${process.env.PUERTO_MS_PELICULAS}`,
+            `http://localhost:${process.env.PUERTO_APIGATEWAY}`,
+            `http://localhost:${process.env.PUERTO_MS_FUNCIONES_Y_SALAS}`,
+            `http://localhost:${process.env.PUERTO_MS_ENVIO_EMAILS}`,
+            `http://localhost:${process.env.PUERTO_MS_MERCADOPAGO}`,
         ],
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
         credentials: true
     });
-    await app.listen(3003);
+    await app.listen(process.env.PUERTO_MS_FUNCIONES_Y_SALAS!);
 }
 bootstrap();
