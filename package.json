@@ -26,6 +26,7 @@
     "homepage": "https://github.com/cinego-team/Servicio_Funciones_y_Salas#readme",
     "dependencies": {
         "@nestjs/common": "^11.1.8",
+        "@nestjs/config": "^4.0.3",
         "@nestjs/core": "^11.1.8",
         "@nestjs/mapped-types": "^2.1.0",
         "@nestjs/platform-express": "^11.1.8",

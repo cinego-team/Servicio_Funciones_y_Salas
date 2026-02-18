@@ -17,11 +17,17 @@ import { Funcion } from './entities/funcion.entity';
 import { Sala } from './entities/sala.entity';
 import { IdiomaModule } from './idioma/idioma.module';
 import { Idioma } from './entities/idioma.entity';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
     imports: [
+        ConfigModule.forRoot({
+            isGlobal: true,
+        }),
         TypeOrmModule.forRoot({
-            port: +process.env.PUERTO_BD!,
+            type: 'postgres',
+            host: 'localhost',
+            port: Number(process.env.PUERTO_BD ?? 5432),
             database: process.env.PG_DATABASE_MS_USUARIOS,
             username: process.env.PG_USERNAME,
             password: process.env.PG_PASSWORD,
