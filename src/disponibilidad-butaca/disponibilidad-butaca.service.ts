@@ -131,13 +131,14 @@ export class DisponibilidadButacaService {
             const resultadoUpdate = await this.disponibilidadRepo.update(
                 {
                     id: In(disponibilidadButacaIds),
-                    estadoDisponibilidadButaca: { id: estadoDisponible.id },
+                    estadoDisponibilidadButaca: estadoDisponible.id as any,
                 },
                 {
-                    estadoDisponibilidadButaca: estadoReservada,
+                    estadoDisponibilidadButaca: estadoReservada.id as any,
                 }
             );
             const actualizadas = resultadoUpdate.affected || 0;
+            console.log("actualizadas: ", actualizadas)
             return {
                 actualizadas,
             };
@@ -160,21 +161,24 @@ export class DisponibilidadButacaService {
                 throw new NotFoundException('Estado OCUPADO no encontrado en la base de datos');
             }
 
+            console.log("ids a ocupar: ", disponibilidadButacaIds)
             const resultadoUpdate = await this.disponibilidadRepo.update(
                 {
                     id: In(disponibilidadButacaIds),
-                    estadoDisponibilidadButaca: { id: estadoReservada.id },
+                    estadoDisponibilidadButaca: estadoReservada.id as any,
                 },
                 {
-                    estadoDisponibilidadButaca: estadoOcupada,
+                    estadoDisponibilidadButaca: estadoOcupada.id as any,
                 }
             );
             const actualizadas = resultadoUpdate.affected || 0;
-
+            console.log("actualizadas: ", actualizadas)
             return {
                 actualizadas,
             };
         } catch (error) {
+            console.log("errrrorrrr")
+            console.log(error)
             throw new InternalServerErrorException('Error al ocupar las butacas');
         }
     }

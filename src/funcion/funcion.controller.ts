@@ -19,7 +19,7 @@ import {
 import { UnauthorizedException, NotFoundException } from '@nestjs/common';
 @Controller('funcion')
 export class FuncionController {
-    constructor(private readonly funcionService: FuncionService) {}
+    constructor(private readonly funcionService: FuncionService) { }
 
     // ===== ADMIN PRIMERO =====
     @Get('admin/all')
@@ -95,5 +95,10 @@ export class FuncionController {
         @Param('id', ParseIntPipe) id: number,
     ): Promise<ButacasDetalleResponse> {
         return this.funcionService.getButacasDetails(id);
+    }
+
+    @Get('precio-entrada/:id')
+    async getPrecioEntrada(@Param('id', ParseIntPipe) id: number) {
+        return this.funcionService.getPrecioEntradaByFuncionId(id);
     }
 }

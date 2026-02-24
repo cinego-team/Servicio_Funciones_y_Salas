@@ -28,14 +28,16 @@ export class DisponibilidadButacaController {
     async reservarButacas(
         @Body() body: { disponibilidadButacaIds: number[] }
     ): Promise<{ actualizadas: number }> {
+        console.log('IDs a reservar:', body.disponibilidadButacaIds);
         return this.disponibilidadService.reservarButacas(body.disponibilidadButacaIds);
     }
 
     @Patch('ocupar')
     async ocuparButacas(
-        @Body() body: { disponibilidadButacaIds: number[] }
+        @Body() body: { disponibilidadButacasIds: number[] }
     ): Promise<{ actualizadas: number }> {
-        return this.disponibilidadService.ocuparButacas(body.disponibilidadButacaIds);
+        console.log('IDs a ocupar:', body.disponibilidadButacasIds);
+        return this.disponibilidadService.ocuparButacas(body.disponibilidadButacasIds);
     }
 
     @Delete(':id')

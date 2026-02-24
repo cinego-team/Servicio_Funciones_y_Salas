@@ -43,7 +43,7 @@ export class FuncionService {
         private readonly disponibilidadButacaService: DisponibilidadButacaService,
         @InjectRepository(DisponibilidadButaca)
         private disponibilidadButacaRepo: Repository<DisponibilidadButaca>,
-    ) {}
+    ) { }
     /**
     async newFuncion(datos: FuncionInput): Promise<FuncionResponse> {
         try {
@@ -362,24 +362,24 @@ export class FuncionService {
 
                 idioma: funcion.idioma
                     ? {
-                          id: funcion.idioma.id,
-                          nombre: funcion.idioma.nombre,
-                      }
+                        id: funcion.idioma.id,
+                        nombre: funcion.idioma.nombre,
+                    }
                     : null,
 
                 sala: funcion.sala
                     ? {
-                          id: funcion.sala.id,
-                          nroSala: funcion.sala.nroSala,
-                      }
+                        id: funcion.sala.id,
+                        nroSala: funcion.sala.nroSala,
+                    }
                     : null,
 
                 formato: funcion.formato
                     ? {
-                          id: funcion.formato.id,
-                          nombre: funcion.formato.nombre,
-                          precio: funcion.formato.precio,
-                      }
+                        id: funcion.formato.id,
+                        nombre: funcion.formato.nombre,
+                        precio: funcion.formato.precio,
+                    }
                     : null,
                 usuarioId: funcion.usuarioId,
             }));
@@ -520,7 +520,7 @@ export class FuncionService {
             usuarioId: userId,
         };
     }
-    
+
     async updateFuncionAdmin(
         id: number,
         dto: Partial<FuncionInputAdmin>,
@@ -594,12 +594,23 @@ export class FuncionService {
                 : null,
             formato: saved.formato
                 ? {
-                      id: saved.formato.id,
-                      nombre: saved.formato.nombre,
-                      precio: saved.formato.precio,
-                  }
+                    id: saved.formato.id,
+                    nombre: saved.formato.nombre,
+                    precio: saved.formato.precio,
+                }
                 : null,
             usuarioId: saved.usuarioId,
         };
+    }
+
+    async getPrecioEntradaByFuncionId(id: number): Promise<{ precio: number }> {
+        const funcion = await this.funcionRepo.findOne({
+            where: { id },
+            relations: ['formato'],
+        });
+        if (!funcion || !funcion.formato) {
+            throw new NotFoundException('Función o formato no encontrado');
+        }
+        return { precio: funcion.formato.precio };
     }
 }
