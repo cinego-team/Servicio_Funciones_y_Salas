@@ -65,3 +65,30 @@ export class FuncionResponseAdmin {
     } | null;
     usuarioId: number;
 }
+export class FuncionResponseAll {
+    id: number;
+    peliculaId: number;
+    peliculaNombre: string;
+    fecha: Date;
+    hora: string;
+    estaDisponible: boolean;
+    idioma: {
+        id: number;
+        nombre: string;
+    } | null;
+    sala: {
+        id: number;
+        nroSala: number;
+    } | null;
+    formato: {
+        id: number;
+        nombre: string;
+        precio: number;
+    } | null;
+    usuarioId: number;
+    empleado:
+    {
+        nombre: string;
+        apellido: string;
+    }
+}

@@ -23,7 +23,7 @@ import {
     FuncionResponse,
     FuncionResponseAdmin,
 } from './dto';
-import { axiosAPIPeliculas } from '../axios_service/axios.client';
+import { axiosAPIPeliculas, axiosAPIUsuarios } from '../axios_service/axios.client';
 import { config } from '../axios_service/env';
 import { IdiomaService } from '../idioma/idioma.service';
 import { DisponibilidadButaca } from '../entities/disponibilidadButaca.entity';
@@ -347,48 +347,75 @@ export class FuncionService {
             );
         }
     }
-    async getFunciones(): Promise<FuncionResponseAdmin[]> {
-        try {
-            const funciones = await this.funcionRepo.find({
-                relations: ['idioma', 'sala', 'formato'],
-            });
+    async getFunciones(): Promise<{
+  id: number;
+  peliculaId: number;
+  peliculaNombre: string;
+  fecha: Date;
+  hora: string;
+  estaDisponible: boolean;
+  idioma: { id: number; nombre: string } | null;
+  sala: { id: number; nroSala: number } | null;
+  formato: { id: number; nombre: string; precio: number } | null;
+  usuarioId: number;
+  empleado:{  nombre: string; apellido: string;}
+ 
+}[]> {
+  try {
+    const funciones = await this.funcionRepo.find({
+      relations: ['idioma', 'sala', 'formato'],
+    });
 
-            return funciones.map((funcion) => ({
-                id: funcion.id,
-                peliculaId: funcion.peliculaId,
-                fecha: funcion.fecha,
-                hora: funcion.hora,
-                estaDisponible: funcion.estaDisponible,
+    return await Promise.all(
+      funciones.map(async (funcion) => {
+        const peliculaResponse = await axiosAPIPeliculas.get(
+          config.APIPeliculasUrls.getPeliculaById(funcion.peliculaId)
+        );
+        const empleadoResp = await axiosAPIUsuarios.get( config.APIUsuariosUrls.getDatosEmpleadoById(funcion.usuarioId))
 
-                idioma: funcion.idioma
-                    ? {
-                        id: funcion.idioma.id,
-                        nombre: funcion.idioma.nombre,
-                    }
-                    : null,
+        
+        return {
+  id: funcion.id,
+  peliculaId: funcion.peliculaId,
+  peliculaNombre: peliculaResponse.data.nombre,
+  fecha: funcion.fecha,
+  hora: funcion.hora,
+  estaDisponible: funcion.estaDisponible,
 
-                sala: funcion.sala
-                    ? {
-                        id: funcion.sala.id,
-                        nroSala: funcion.sala.nroSala,
-                    }
-                    : null,
+  idioma: funcion.idioma
+    ? { id: funcion.idioma.id, nombre: funcion.idioma.nombre }
+    : null,
 
-                formato: funcion.formato
-                    ? {
-                        id: funcion.formato.id,
-                        nombre: funcion.formato.nombre,
-                        precio: funcion.formato.precio,
-                    }
-                    : null,
-                usuarioId: funcion.usuarioId,
-            }));
-        } catch (error) {
-            throw new InternalServerErrorException(
-                'Error al obtener las funciones',
-            );
-        }
-    }
+  sala: funcion.sala
+    ? { id: funcion.sala.id, nroSala: funcion.sala.nroSala }
+    : null,
+
+  formato: funcion.formato
+    ? {
+        id: funcion.formato.id,
+        nombre: funcion.formato.nombre,
+        precio: funcion.formato.precio,
+      }
+    : null,
+
+  usuarioId: funcion.usuarioId, // 👈 AGREGAR ESTO
+
+  empleado: {
+    usuarioId: empleadoResp.data.usuarioId,
+    nombre: empleadoResp.data.nombre,
+    apellido: empleadoResp.data.apellido,
+  },
+};
+      })
+    );
+  } catch (error) {
+  console.error('ERROR REAL:', error.response?.data || error.message);
+  throw new InternalServerErrorException(
+    'Error al obtener las funciones'
+  );
+}
+}
+
     async getFuncById(id: number): Promise<{
         id: number;
         peliculaId: number;

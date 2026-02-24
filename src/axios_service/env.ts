@@ -7,6 +7,6 @@ export const config = {
     APIUsuariosUrls: {
         baseUrl: 'http://localhost:3004',
         getDatosEmpleadoById: (id: number) =>
-            `/microservicio-usuarios/datos-empleado/${id}`,
+            `/usuario/admin/datos-empleado/${id}`,
     }
 };

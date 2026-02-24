@@ -10,7 +10,7 @@ import {
     Headers,
 } from '@nestjs/common';
 import { FuncionService } from './funcion.service';
-import { ButacasDetalleResponse, FuncionInput } from './dto';
+import { ButacasDetalleResponse, FuncionInput, FuncionResponseAll } from './dto';
 import {
     FuncionResponse,
     FuncionResponseAdmin,
@@ -23,7 +23,7 @@ export class FuncionController {
 
     // ===== ADMIN PRIMERO =====
     @Get('admin/all')
-    async getAllFuncionesAdmin(): Promise<FuncionResponseAdmin[]> {
+    async getAllFuncionesAdmin(): Promise<FuncionResponseAll[]> {
         return this.funcionService.getFunciones();
     }
 
