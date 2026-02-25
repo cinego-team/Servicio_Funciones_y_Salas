@@ -128,17 +128,28 @@ export class DisponibilidadButacaService {
             }
 
 
-            const resultadoUpdate = await this.disponibilidadRepo.update(
+            const disponibilidades = await this.disponibilidadRepo.find(
                 {
-                    id: In(disponibilidadButacaIds),
-                    estadoDisponibilidadButaca: estadoDisponible.id as any,
+                    where: {
+                        id: In(disponibilidadButacaIds)
+                    },
+                    relations: ['estadoDisponibilidadButaca']
                 },
-                {
-                    estadoDisponibilidadButaca: estadoReservada.id as any,
-                }
             );
-            const actualizadas = resultadoUpdate.affected || 0;
+            const actualizadas = disponibilidades.length;
             console.log("actualizadas: ", actualizadas)
+            if (actualizadas === 0) {
+                throw new NotFoundException('No se encontraron disponibilidades para reservar');
+            }
+            for (const disponibilidad of disponibilidades) {
+                if (disponibilidad.estadoDisponibilidadButaca.id !== estadoDisponible.id) {
+                    throw new NotFoundException(`La disponibilidad con id ${disponibilidad.id} no está en estado DISPONIBLE`);
+                }
+            }
+            await this.disponibilidadRepo.update(
+                { id: In(disponibilidadButacaIds) },
+                { estadoDisponibilidadButaca: estadoReservada }
+            );
             return {
                 actualizadas,
             };
