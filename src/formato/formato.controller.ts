@@ -20,11 +20,6 @@ export class FormatoController {
         return this.formatoService.create(body);
     }
 
-    @Get()
-    async findAll(): Promise<FormatoResponse[]> {
-        return this.formatoService.findAll();
-    }
-
     @Get(':id')
     async findOne(
         @Param('id', ParseIntPipe) id: number,
@@ -59,9 +54,8 @@ export class FormatoController {
     async findOneFormatoForPut(
         @Param('id', ParseIntPipe) id: number,
     ): Promise<FormatoResponse> {
-        const formatoEntity = await this.formatoService.findOneFormatoForPut(
-            id,
-        );
+        const formatoEntity =
+            await this.formatoService.findOneFormatoForPut(id);
 
         return {
             id: formatoEntity.id,
@@ -70,12 +64,12 @@ export class FormatoController {
         };
     }
     @Get('precio-entrada/:id')
-        async getPrecioEntrada(
-            @Param('id', ParseIntPipe) id: number,
-        ): Promise<{ precio: number }> {
-            const formato = await this.formatoService.findOne(id);
-            return {
-                precio: formato.precio,
-            };
+    async getPrecioEntrada(
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<{ precio: number }> {
+        const formato = await this.formatoService.findOne(id);
+        return {
+            precio: formato.precio,
+        };
     }
 }

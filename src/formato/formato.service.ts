@@ -34,32 +34,6 @@ export class FormatoService {
         }
     }
 
-    async findAll(): Promise<FormatoResponse[]> {
-        try {
-            const formatos = await this.formatoRepository.find({
-                relations: ['funciones'],
-            });
-
-            if (!formatos || formatos.length === 0) {
-                throw new NotFoundException('No se encontraron formatos');
-            }
-
-            const response: FormatoResponse[] = formatos.map((formato) => {
-                return {
-                    id: formato.id,
-                    nombre: formato.nombre,
-                    precio: formato.precio,
-                    funciones: formato.funciones,
-                };
-            });
-            return response;
-        } catch (error) {
-            throw new InternalServerErrorException(
-                'Error al obtener los formatos',
-            );
-        }
-    }
-
     async findOne(id: number): Promise<FormatoResponse> {
         try {
             const formato = await this.formatoRepository.findOne({

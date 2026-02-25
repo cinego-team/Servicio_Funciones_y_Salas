@@ -1,10 +1,22 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, ParseIntPipe, Patch } from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    Post,
+    Put,
+    Delete,
+    Param,
+    Body,
+    ParseIntPipe,
+    Patch,
+} from '@nestjs/common';
 import { DisponibilidadButacaService } from './disponibilidad-butaca.service';
 import { DisponibilidadButacaInput, DisponibilidadButacaResponse } from './dto';
 
 @Controller('disponibilidad-butaca')
 export class DisponibilidadButacaController {
-    constructor(private readonly disponibilidadService: DisponibilidadButacaService) { }
+    constructor(
+        private readonly disponibilidadService: DisponibilidadButacaService,
+    ) {}
 
     @Get()
     async findAll(): Promise<DisponibilidadButacaResponse[]> {
@@ -12,32 +24,36 @@ export class DisponibilidadButacaController {
     }
 
     @Get(':id')
-    async findOne(@Param('id', ParseIntPipe) id: number): Promise<DisponibilidadButacaResponse> {
+    async findOne(
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<DisponibilidadButacaResponse> {
         return this.disponibilidadService.findOne(id);
     }
 
     @Put(':id')
     async update(
         @Param('id', ParseIntPipe) id: number,
-        @Body() body: Partial<DisponibilidadButacaInput>
+        @Body() body: Partial<DisponibilidadButacaInput>,
     ): Promise<DisponibilidadButacaResponse> {
         return this.disponibilidadService.update(id, body);
     }
 
     @Patch('reservar')
     async reservarButacas(
-        @Body() body: { disponibilidadButacaIds: number[] }
+        @Body() body: { disponibilidadButacaIds: number[] },
     ): Promise<{ actualizadas: number }> {
-        console.log('IDs a reservar:', body.disponibilidadButacaIds);
-        return this.disponibilidadService.reservarButacas(body.disponibilidadButacaIds);
+        return this.disponibilidadService.reservarButacas(
+            body.disponibilidadButacaIds,
+        );
     }
 
     @Patch('ocupar')
     async ocuparButacas(
-        @Body() body: { disponibilidadButacasIds: number[] }
+        @Body() body: { disponibilidadButacasIds: number[] },
     ): Promise<{ actualizadas: number }> {
-        console.log('IDs a ocupar:', body.disponibilidadButacasIds);
-        return this.disponibilidadService.ocuparButacas(body.disponibilidadButacasIds);
+        return this.disponibilidadService.ocuparButacas(
+            body.disponibilidadButacasIds,
+        );
     }
 
     @Delete(':id')
