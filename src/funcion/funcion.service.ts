@@ -365,7 +365,7 @@ export class FuncionService {
             );
         }
     }
-    async getFunciones(): Promise<{
+    async getFunciones(page, quantity): Promise<{
         id: number;
         peliculaId: number;
         peliculaNombre: string;
@@ -380,8 +380,15 @@ export class FuncionService {
 
     }[]> {
         try {
+            const skip = (page - 1) * quantity;
             const funciones = await this.funcionRepo.find({
                 relations: ['idioma', 'sala', 'formato'],
+                order: {
+                    fecha: 'ASC',
+                    hora: 'ASC',
+                },
+                skip: skip,
+                take: quantity,
             });
 
             return await Promise.all(

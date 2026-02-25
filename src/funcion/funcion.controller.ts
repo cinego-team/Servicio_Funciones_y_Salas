@@ -8,6 +8,7 @@ import {
     Body,
     ParseIntPipe,
     Headers,
+    Query,
 } from '@nestjs/common';
 import { FuncionService } from './funcion.service';
 import { ButacasDetalleResponse, FuncionInput, FuncionResponseAll } from './dto';
@@ -23,8 +24,11 @@ export class FuncionController {
 
     // ===== ADMIN PRIMERO =====
     @Get('admin/all')
-    async getAllFuncionesAdmin(): Promise<FuncionResponseAll[]> {
-        return this.funcionService.getFunciones();
+    async getAllFuncionesAdmin(
+        @Query('page') page: number,
+        @Query('quantity') quantity: number,
+    ): Promise<FuncionResponseAll[]> {
+        return this.funcionService.getFunciones(page, quantity);
     }
 
     @Get('admin/:id')
